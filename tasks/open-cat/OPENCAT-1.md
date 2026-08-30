@@ -7,48 +7,28 @@
 
 ---
 
-## 🎯 What This Task Accomplishes
-Scaffolds the native desktop GUI window using `eframe` and `egui`. 
+## 🎯 High-Level Goal & System Behavior
+Establish the desktop application window using `eframe`/`egui` and decouple the 60 FPS immediate-mode UI rendering loop from asynchronous network I/O.
 
-It establishes an asynchronous messaging bridge using `tokio::sync::mpsc` channels. Because `egui` runs in an immediate-mode 60 FPS loop, performing blocking network operations inside the UI thread would freeze the window. This bridge decouples UI rendering from Tokio background workers that execute `cat-core` functions.
-
----
-
-## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] **1. Dependencies**: Add `cat-core = { path = "../../crates/cat-core" }`, `eframe = { workspace = true }`, and `egui = { workspace = true }` to `apps/open-cat/Cargo.toml`.
-*   [ ] **2. Command & Event Message Enums**:
-    *   Define `pub enum AppCommand` (messages sent from GUI to worker): `Authenticate`, `RefreshFiles`, `UploadFile(PathBuf)`, `DownloadFile(String, PathBuf)`, `PlayMedia(DriveFile)`.
-    *   Define `pub enum AppEvent` (messages sent from worker to GUI): `Authenticated`, `FilesLoaded(Vec<DriveFile>)`, `QuotaUpdated(QuotaInfo)`, `UploadProgress(f32)`, `BufferingProgress(f32)`, `Error(String)`.
-*   [ ] **3. Spawn Dedicated Tokio Worker Thread**:
-    *   In `main.rs`, create unbounded MPSC channels: `let (cmd_tx, mut cmd_rx) = tokio::sync::mpsc::unbounded_channel();` and `let (evt_tx, evt_rx) = tokio::sync::mpsc::unbounded_channel();`.
-    *   Spawn a background OS thread (`std::thread::spawn`) that initializes a multi-threaded Tokio runtime:
-        ```rust
-        tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap().block_on(async move { ... });
-        ```
-*   [ ] **4. Worker Command Loop**:
-    *   Inside the worker, loop over `cmd_rx.recv().await`.
-    *   Match on commands and dispatch calls to `cat_core::DriveClient`, sending `AppEvent` updates back to the UI.
-*   [ ] **5. Implement `eframe::App`**:
-    *   Define `pub struct OpenCatApp` holding `cmd_tx`, `evt_rx`, `files: Vec<DriveFile>`, `quota: Option<QuotaInfo>`, `upload_progress: Option<f32>`.
-    *   In `eframe::App::update(&mut self, ctx, _frame)`:
-        *   Drain `self.evt_rx.try_recv()` to update UI state without blocking.
-        *   Render top bar, main canvas, and status footer.
-*   [ ] **6. Repaint Signals**: Whenever the worker transmits an `AppEvent`, invoke `ctx.request_repaint()` to trigger an immediate frame redraw.
+Using an Actor-style message passing pattern (MPSC channels), the UI thread stays silky-smooth and responsive while a dedicated background Tokio runtime handles heavy `cat-core` operations (authentication, file downloads, chunked uploads).
 
 ---
 
-## 🦀 Rust Implementation Guide & Architectural Notes
-
-### 1. The Immediate-Mode UI Lifecycle
-In `egui`, the `update()` function runs 60 times per second. You cannot `.await` anything inside `update()`. The non-blocking `try_recv()` pattern allows the UI to poll for background updates instantly each frame.
-
-### 2. Decoupled Actor Architecture
-The UI thread knows nothing about HTTP sockets or Google Drive REST endpoints. It only knows how to send `AppCommand` and display `AppEvent`. All networking lives safely inside the Tokio thread pool.
+## 🧭 Architectural Milestones
+*   [ ] **1. Message Protocol Definition**: Design strongly typed `AppCommand` (UI $ightarrow$ Worker) and `AppEvent` (Worker $ightarrow$ UI) enums to establish a clean boundary between UI rendering and network I/O.
+*   [ ] **2. Tokio Worker Runtime Isolation**: Spawn a background thread initializing a dedicated multi-threaded Tokio runtime that processes `cat-core` operations asynchronously.
+*   [ ] **3. Immediate-Mode UI Lifecycle (`eframe::App`)**: Implement the `eframe::App` state loop to non-blockingly drain event channels (`try_recv`), render UI panels, and signal immediate repaints on incoming events.
+*   [ ] **4. Error & Notification Drawer**: Build a toast/banner notification layer in the UI to display async errors and network statuses cleanly.
 
 ---
 
-## 📚 Documentation & Reference Links
-*   **`egui` Documentation**: [https://docs.rs/egui/latest/egui/](https://docs.rs/egui/latest/egui/)
-*   **`eframe` Desktop Framework**: [https://docs.rs/eframe/latest/eframe/](https://docs.rs/eframe/latest/eframe/)
-*   **Tokio MPSC Channels Tutorial**: [https://tokio.rs/tokio/tutorial/channels](https://tokio.rs/tokio/tutorial/channels)
-*   **Tokio Multi-Thread Runtime Builder**: [https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html](https://docs.rs/tokio/latest/tokio/runtime/struct.Builder.html)
+## 🔒 UI & Concurrency Invariants
+*   **60 FPS Guarantee**: Never perform blocking I/O, file reading, or `.await` calls inside `eframe::App::update()`.
+*   **Decoupled State**: The GUI layer must never talk to Google Drive directly; it only dispatches commands and reacts to events.
+
+---
+
+## 📚 Documentation & Reference
+*   **`egui` Framework**: [https://docs.rs/egui/latest/egui/](https://docs.rs/egui/latest/egui/)
+*   **`eframe` Desktop Runner**: [https://docs.rs/eframe/latest/eframe/](https://docs.rs/eframe/latest/eframe/)
+*   **Tokio MPSC Channels**: [https://tokio.rs/tokio/tutorial/channels](https://tokio.rs/tokio/tutorial/channels)

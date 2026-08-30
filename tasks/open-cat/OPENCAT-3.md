@@ -7,44 +7,21 @@
 
 ---
 
-## 🎯 What This Task Accomplishes
-Implements an intuitive drag-and-drop dropzone in the `open-cat` desktop interface. 
+## 🎯 High-Level Goal & System Behavior
+Implement an intuitive drag-and-drop upload dropzone in the `open-cat` GUI. 
 
-It intercepts OS-level file hover and drop events, highlights the UI dropzone with glowing visual cues, validates file size restrictions via `cat_core::validate_upload()`, and renders multi-file upload progress bars with transfer statistics.
-
----
-
-## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] **1. Detect File Hover**:
-    *   In `update()`, check `let is_hovering = !ctx.input(|i| i.raw.hovered_files.is_empty());`.
-    *   If hovering, style the central panel with a distinctive border and background tint to signify an active dropzone.
-*   [ ] **2. Capture File Drops**:
-    *   Check `let dropped_files = ctx.input(|i| i.raw.dropped_files.clone());`.
-    *   Extract paths from `dropped_files` and send `AppCommand::UploadFile(path)` down the channel.
-*   [ ] **3. Fallback File Browser**:
-    *   Add a "Browse Files..." button that triggers `rfd::FileDialog::new().pick_files()`.
-*   [ ] **4. Worker Quota Validation**:
-    *   When the background worker receives `AppCommand::UploadFile(path)`:
-        *   Read file size with `tokio::fs::metadata(&path).await?.len()`.
-        *   Call `cat_core::validate_upload(&current_quota, file_size)`.
-        *   If quota is exceeded, dispatch `AppEvent::Error("5GB Quota Exceeded! Cannot upload file.".into())`.
-*   [ ] **5. Resumable Upload & Progress Drawer**:
-    *   If valid, call `cat_core::DriveClient::upload_file` passing a progress closure that sends `AppEvent::UploadProgress(pct)`.
-    *   Render an animated upload drawer at the bottom of the UI displaying current file name and live progress bar.
+The interface intercepts OS-level file drops from Finder or Explorer, provides visual feedback during hover, pre-validates files against `cat-core` quota rules, and renders multi-file transfer progress drawers with real-time transfer percentages.
 
 ---
 
-## 🦀 Rust Implementation Guide & Architectural Notes
-
-### 1. `egui::InputState` Raw Events
-`ctx.input(|i| i.raw.dropped_files)` gives access to files dropped from macOS Finder or Windows Explorer during that specific frame.
-
-### 2. Thread-Safe Progress Callbacks
-The progress callback passed to `cat-core` must implement `Fn(f32) + Send + 'static` so Tokio can safely invoke it from background worker threads.
+## 🧭 Architectural Milestones
+*   [ ] **1. Dropzone Event Interceptor**: Listen for OS-level hovered and dropped file events, applying dynamic styling (glowing borders / background tint) when files hover over the window.
+*   [ ] **2. File Picker Fallback**: Provide a "Browse Files..." action using `rfd::FileDialog` as an alternative to drag-and-drop.
+*   [ ] **3. Pre-Flight Quota Validation**: Dispatch dropped files to the worker to execute `cat_core::validate_upload()`, surfacing quota violation errors immediately if the file exceeds the 5GB cap.
+*   [ ] **4. Live Progress Drawer**: Render a real-time progress bar displaying uploaded percentage and file name as chunks stream to Google Drive.
 
 ---
 
-## 📚 Documentation & Reference Links
-*   **`egui::InputState` Reference**: [https://docs.rs/egui/latest/egui/struct.InputState.html](https://docs.rs/egui/latest/egui/struct.InputState.html)
-*   **`egui::DroppedFile` Reference**: [https://docs.rs/egui/latest/egui/struct.DroppedFile.html](https://docs.rs/egui/latest/egui/struct.DroppedFile.html)
-*   **Tokio Async Filesystem**: [https://docs.rs/tokio/latest/tokio/fs/index.html](https://docs.rs/tokio/latest/tokio/fs/index.html)
+## 📚 Documentation & Reference
+*   **`egui::InputState`**: [https://docs.rs/egui/latest/egui/struct.InputState.html](https://docs.rs/egui/latest/egui/struct.InputState.html)
+*   **`egui::DroppedFile`**: [https://docs.rs/egui/latest/egui/struct.DroppedFile.html](https://docs.rs/egui/latest/egui/struct.DroppedFile.html)
