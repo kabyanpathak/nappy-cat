@@ -1,42 +1,15 @@
-# OPENCAT-2: Google Drive OAuth 2.0 PKCE Flow & Secure Token Store
+# OPENCAT-2: Vault Grid UI & Native Media Launcher
 
-**Epic**: `OPENCAT-EPIC-1`
-**Component**: `crates/cat-core` (Auth Module)
-**Priority**: Blocker
-**Story Points**: 5 SP
+**Epic**: `OPENCAT-EPIC`
+**Component**: `open-cat` (UI layer)
+**Priority**: High
 
 ## Description
-Implement the OAuth 2.0 Authorization Code flow with PKCE (Proof Key for Code Exchange) tailored for desktop applications. Use the strictly isolated scope `https://www.googleapis.com/auth/drive.file`.
+Build the visual file explorer. It consumes the `DriveFile` models from `cat-core` and uses `cat-core`'s temp-buffering method to launch VLC.
 
 ## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] 1. In `crates/cat-core/src`, create a new file `auth.rs`. (Don't forget to declare `pub mod auth;` in `lib.rs`).
-*   [ ] 2. Define a struct `TokenStore` with `access_token: String`, `refresh_token: String`, and `expires_at: u64`.
-*   [ ] 3. Add `#[derive(Serialize, Deserialize)]` to `TokenStore` so it automatically maps to JSON.
-*   [ ] 4. Write a function `generate_pkce()` that creates a random 64-character string, hashes it with SHA-256 (`sha2` crate), and Base64URL encodes it.
-*   [ ] 5. Write an `open_browser()` function using the `open` crate: `open::that("https://accounts.google.com/o/oauth2/v2/auth?...&code_challenge=...")`.
-*   [ ] 6. Write a function `save_token(token: TokenStore)` that uses `std::fs::write` to save the token data to a local `token.json` file.
-
-## Acceptance Criteria
-- [ ] Launching auth flow automatically opens the browser to Google sign-in.
-- [ ] OAuth callback on `127.0.0.1:4040` extracts authorization code and stores valid token bundle.
-- [ ] Token refresh logic recovers seamlessly from expired `access_token` using `refresh_token`.
-
----
-
-## 🦀 Rust Implementation Guide & Documentation
-
-### Architectural Logic
-Google Drive requires OAuth 2.0. Because this is a desktop app (no secure backend to hide a client secret), you must use **PKCE**. 
-PKCE involves generating a random string (the `code_verifier`) and hashing it (the `code_challenge`). You send the challenge to Google, the user logs in, Google redirects to your local loopback (`http://127.0.0.1:4040`), and then you exchange the authorization code + your original `code_verifier` for an `access_token`.
-
-### How it Works (Logic Flow)
-1. **Cryptography**: Use a crate like `sha2` to generate a SHA-256 hash of a random 64-byte string. Use the `base64` crate to encode it into `Base64URL` format (without padding).
-2. **Opening the Browser**: Use the `open` crate to launch the system's default browser pointing to Google's OAuth endpoint.
-3. **Data Serialization**: Represent the Google Token response as a Rust struct using `#[derive(Deserialize, Serialize)]`. 
-4. **Filesystem IO**: Use `tokio::fs` to save this struct to `token.json` so the user doesn't have to log in on every app restart.
-5. **Token Refresh Mechanism**: Before any Google Drive API call, check the `expires_in` timestamp. If expired, send a `POST` request using `reqwest` to refresh the token, update the struct, and overwrite `token.json`.
-
-### Documentation & Resources
-*   **Google OAuth Desktop App Flow**: [https://developers.google.com/identity/protocols/oauth2/native-app](https://developers.google.com/identity/protocols/oauth2/native-app)
-*   **Serde JSON**: [https://docs.rs/serde_json/latest/serde_json/](https://docs.rs/serde_json/latest/serde_json/)
-*   **Reqwest (POST requests)**: [https://docs.rs/reqwest/latest/reqwest/](https://docs.rs/reqwest/latest/reqwest/)
+*   [ ] 1. Draw a `cat_core::QuotaInfo` progress bar using `egui::ProgressBar`.
+*   [ ] 2. Render the file list using `egui_extras::TableBuilder`. 
+*   [ ] 3. When a user clicks "Play", send `AppCommand::PlayMedia` to the worker.
+*   [ ] 4. The worker calls `cat_core::buffer_to_temp(file).await`.
+*   [ ] 5. When the worker finishes buffering, it uses the `open` crate to launch the native media player.
