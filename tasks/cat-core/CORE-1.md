@@ -4,6 +4,7 @@
 **Component**: Workspace Root & `crates/cat-core`  
 **Priority**: Blocker  
 **Story Points**: 2 SP  
+**Status**: ✅ DONE  
 
 ---
 
@@ -15,16 +16,16 @@ In the Cat Ecosystem, `cat-core` is the central "Thick SDK" holding all Google D
 ---
 
 ## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] **1. Folder Structure**: Create the root layout: `crates/cat-core/src/` and `apps/open-cat/src/`.
-*   [ ] **2. Entry Points**:
-    *   Create `crates/cat-core/src/lib.rs` (the shared library entry point) with `pub fn init() {}`.
-    *   Create `apps/open-cat/src/main.rs` (the binary GUI entry point) with `fn main() {}`.
-*   [ ] **3. Root Workspace Manifest**: Replace root `Cargo.toml` with a virtual `[workspace]` declaring members `["crates/cat-core", "apps/open-cat"]` and `resolver = "2"`.
-*   [ ] **4. Centralize Dependencies (`[workspace.dependencies]`)**: Define common crates and feature flags in the root `Cargo.toml` (`tokio`, `serde`, `serde_json`, `reqwest`, `thiserror`, `sha2`, `base64`, `open`, `eframe`, `egui`, `rfd`).
-*   [ ] **5. Configure Member Manifests**:
-    *   Create `crates/cat-core/Cargo.toml` with `name = "cat-core"` and dependencies using `{ workspace = true }`.
-    *   Create `apps/open-cat/Cargo.toml` with `name = "open-cat"`, pulling `cat-core = { path = "../../crates/cat-core" }`.
-*   [ ] **6. Build Verification**: Run `cargo check --workspace` to ensure Cargo generates a clean `Cargo.lock` and compiles all crates without warnings.
+*   [x] **1. Folder Structure**: Create the root layout: `crates/cat-core/src/` and `apps/open-cat/src/`.
+*   [x] **2. Entry Points**:
+    *   Create `crates/cat-core/src/lib.rs` (the shared library entry point).
+    *   Create `apps/open-cat/src/main.rs` (the binary GUI entry point).
+*   [x] **3. Root Workspace Manifest**: Replace root `Cargo.toml` with a virtual `[workspace]` declaring members `["crates/cat-core", "apps/open-cat"]` and `resolver = "2"`.
+*   [x] **4. Centralize Dependencies**: Define common crates and feature flags in `cat-core` and `open-cat` (`tokio`, `serde`, `serde_json`, `reqwest`, `thiserror`, `sha2`, `base64`, `open`, `eframe`, `egui`, `rfd`).
+*   [x] **5. Configure Member Manifests**:
+    *   `crates/cat-core/Cargo.toml` configured with `name = "cat-core"`.
+    *   `apps/open-cat/Cargo.toml` configured with `name = "open-cat"` pulling `cat-core = { path = "../../crates/cat-core" }`.
+*   [x] **6. Build Verification**: Run `cargo check --workspace` to ensure Cargo generates a clean `Cargo.lock` and compiles all crates without warnings.
 
 ---
 
