@@ -8,6 +8,14 @@
 ## Description
 Build the interactive file explorer inside `open-cat`, featuring a visual 5GB storage gauge, file cards/table with MIME-type icons, file download dialogs, and one-click VLC video streaming.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. In `update()`, draw a progress bar for the quota: `ui.add(egui::ProgressBar::new(used / max).text("Storage"));`.
+*   [ ] 2. Draw your file list using `egui::ScrollArea::vertical().show(ui, |ui| { ... })`. Iterate over your `self.files` vector.
+*   [ ] 3. Next to each file in the UI, add an `if ui.button("Download").clicked() { ... }`. Trigger the `rfd` crate to open a native OS "Save As" dialog.
+*   [ ] 4. Next to video files, add `if ui.button("Play in VLC").clicked() { ... }`.
+*   [ ] 5. For the VLC button, format the local proxy URL: `let url = format!("http://127.0.0.1:4040/stream/{}", file.id);`.
+*   [ ] 6. Use `open::that(url)` or `std::process::Command::new("vlc").arg(url).spawn()` to launch the media player detached from your application.
+
 ## Acceptance Criteria
 - [ ] Storage gauge accurately reflects remote `_meta/quota.json`.
 - [ ] Clicking "Download" writes complete file to chosen local path.

@@ -8,6 +8,14 @@
 ## Description
 Build a lightweight local background HTTP daemon running on `127.0.0.1:4040` using `axum`. It serves two purposes: handling OAuth callbacks and acting as an HTTP `Range`-compliant streaming proxy for media files stored on Google Drive.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. In `apps/cat-daemon/src/main.rs`, set up a basic `#[tokio::main]` function.
+*   [ ] 2. Create an `axum::Router::new().route("/stream/:id", get(stream_handler))`.
+*   [ ] 3. Use `axum::serve(listener, app).await` to start the server on `127.0.0.1:4040`.
+*   [ ] 4. Write the handler: `async fn stream_handler(Path(id): Path<String>, headers: HeaderMap)`.
+*   [ ] 5. Inside the handler, extract the `Range` header and pass it to your `DriveClient` to fetch the specific byte chunk from Google Drive.
+*   [ ] 6. **Crucial for Memory:** Use `reqwest::Response::bytes_stream()` to pipe the Google Drive download directly into Axum's `Body::from_stream()`. Do not `.await` the full body into a `Vec<u8>`!
+
 ## Acceptance Criteria
 - [ ] Daemon runs with under 20MB resident memory footprint.
 - [ ] Opening `http://127.0.0.1:4040/stream/{file_id}` in VLC starts video playback immediately.

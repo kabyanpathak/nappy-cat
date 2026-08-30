@@ -8,6 +8,14 @@
 ## Description
 Scaffold the native desktop GUI using `eframe` and `egui`. Establish an asynchronous messaging pipeline using `tokio::sync::mpsc` channels so network requests (listing, downloading, uploading) run on Tokio background threads without blocking the 60 FPS UI loop.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. In `apps/open-cat/src/main.rs`, set up `eframe::run_native(...)`.
+*   [ ] 2. Define `enum AppCommand { Upload(PathBuf) }` and `enum AppEvent { Progress(f32) }`.
+*   [ ] 3. Before starting `eframe`, create channels so threads can talk: `let (cmd_tx, cmd_rx) = tokio::sync::mpsc::unbounded_channel();` and `let (evt_tx, evt_rx) = unbounded_channel();`.
+*   [ ] 4. Spawn a background thread with `std::thread::spawn`. Inside it, start a Tokio runtime: `tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap().block_on(async { ... })`.
+*   [ ] 5. In your `eframe::App::update` loop, check for background events using `if let Ok(event) = self.evt_rx.try_recv() { ... }` to update your UI state without freezing the app.
+*   [ ] 6. Whenever your background thread sends an event, call `ctx.request_repaint()` so the GUI knows to draw the new data immediately.
+
 ## Acceptance Criteria
 - [ ] UI stays perfectly responsive (60 FPS) during long-running network operations.
 - [ ] Background worker handles commands asynchronously and updates UI via event queue.

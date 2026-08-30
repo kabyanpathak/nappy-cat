@@ -8,6 +8,14 @@
 ## Description
 Implement an intuitive drag-and-drop dropzone in the `open-cat` GUI that detects OS-level file drops and triggers the Quota Guard and chunked upload pipeline.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. Inside your `update()` loop, check if a file is hovering over the window: `let is_hovering = !ctx.input(|i| i.raw.hovered_files.is_empty());`.
+*   [ ] 2. If hovering, draw a nice dashed border or change the background color of your `egui::CentralPanel`.
+*   [ ] 3. Check for dropped files: `ctx.input(|i| i.raw.dropped_files.clone())`.
+*   [ ] 4. Loop through the dropped files, extract their `PathBuf`, and send them to your background thread: `self.cmd_tx.send(AppCommand::Upload(path))`.
+*   [ ] 5. In the background thread, use `tokio::fs::metadata(&path).await` to securely get the file size.
+*   [ ] 6. Pass the size to your Quota Guard logic. If it passes, trigger the `DriveClient` upload!
+
 ## Acceptance Criteria
 - [ ] Dragging files from macOS Finder / Windows Explorer highlights dropzone and captures file paths.
 - [ ] Quota check executes before starting upload; rejected files show clear error tooltip.

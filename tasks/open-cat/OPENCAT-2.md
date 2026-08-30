@@ -8,6 +8,14 @@
 ## Description
 Implement the OAuth 2.0 Authorization Code flow with PKCE (Proof Key for Code Exchange) tailored for desktop applications. Use the strictly isolated scope `https://www.googleapis.com/auth/drive.file`.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. In `crates/cat-core/src`, create a new file `auth.rs`. (Don't forget to declare `pub mod auth;` in `lib.rs`).
+*   [ ] 2. Define a struct `TokenStore` with `access_token: String`, `refresh_token: String`, and `expires_at: u64`.
+*   [ ] 3. Add `#[derive(Serialize, Deserialize)]` to `TokenStore` so it automatically maps to JSON.
+*   [ ] 4. Write a function `generate_pkce()` that creates a random 64-character string, hashes it with SHA-256 (`sha2` crate), and Base64URL encodes it.
+*   [ ] 5. Write an `open_browser()` function using the `open` crate: `open::that("https://accounts.google.com/o/oauth2/v2/auth?...&code_challenge=...")`.
+*   [ ] 6. Write a function `save_token(token: TokenStore)` that uses `std::fs::write` to save the token data to a local `token.json` file.
+
 ## Acceptance Criteria
 - [ ] Launching auth flow automatically opens the browser to Google sign-in.
 - [ ] OAuth callback on `127.0.0.1:4040` extracts authorization code and stores valid token bundle.

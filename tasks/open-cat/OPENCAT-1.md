@@ -8,6 +8,14 @@
 ## Description
 Initialize the Cargo workspace structure defined in Section 3 of `CAT_ECOSYSTEM_MASTER_SPEC.md`. Configure workspace-level dependency inheritance so all ecosystem crates share identical versions of `tokio`, `serde`, `reqwest`, and `eframe`.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. Create a `crates/cat-core` folder, an `apps/open-cat` folder, and an `apps/cat-daemon` folder.
+*   [ ] 2. Inside each, create a `src` folder and an empty `lib.rs` (for core) or `main.rs` (for apps).
+*   [ ] 3. Create the root `Cargo.toml`. Add `[workspace]` and `members = ["crates/cat-core", "apps/open-cat", "apps/cat-daemon"]`.
+*   [ ] 4. In the root `Cargo.toml`, add `[workspace.dependencies]` and define `tokio`, `serde`, and `reqwest` versions.
+*   [ ] 5. In the child `Cargo.toml` files, add dependencies referencing the workspace: `tokio = { workspace = true }`.
+*   [ ] 6. Run `cargo check --workspace` in the terminal. If it compiles without errors, you're done!
+
 ## Acceptance Criteria
 - [ ] Running `cargo check --workspace` compiles all crates cleanly without warnings.
 - [ ] `cat-core` is consumable as a path dependency in both `apps/open-cat` and `apps/cat-daemon`.

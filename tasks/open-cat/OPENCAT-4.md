@@ -8,6 +8,14 @@
 ## Description
 Implement the software-enforced 5GB quota guard system. The guard tracks cumulative folder usage in `_meta/quota.json` on Google Drive and blocks uploads before byte transfer if the 5GB cap is exceeded.
 
+## 🧗‍♀️ Step-by-Step Developer Checklist
+*   [ ] 1. In `crates/cat-core/src`, create `quota.rs`.
+*   [ ] 2. Define `pub struct QuotaInfo { max_bytes: u64, used_bytes: u64 }` and derive `Serialize, Deserialize`.
+*   [ ] 3. Write a validation function `pub fn can_upload(quota: &QuotaInfo, file_size: u64) -> bool`. This is basic math: `quota.used_bytes + file_size <= quota.max_bytes`.
+*   [ ] 4. Use the `thiserror` crate to create a custom error: `enum DriveError { QuotaExceeded, ... }`.
+*   [ ] 5. In your upload function (from OPENCAT-3), call `can_upload`. If false, instantly short-circuit with `return Err(DriveError::QuotaExceeded);`.
+*   [ ] 6. Write a function to serialize `QuotaInfo` back to JSON and upload it to Google Drive to update the state after a successful file transfer.
+
 ## Acceptance Criteria
 - [ ] Upload is rejected instantly with an informative error if file size exceeds remaining quota.
 - [ ] Successful upload atomically updates `_meta/quota.json` on Google Drive.
