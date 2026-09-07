@@ -1,14 +1,13 @@
-use oauth2::RequestTokenError;
-use oauth2::basic::BasicClient;
-use oauth2::reqwest;
 use oauth2::{
-    AuthUrl, AuthorizationCode, BasicErrorResponseType, ClientId, ClientSecret, CsrfToken,
-    HttpClientError, PkceCodeChallenge, RedirectUrl, Scope, StandardErrorResponse, TokenResponse,
+    AuthUrl, AuthorizationCode, ClientId, ClientSecret, CsrfToken, HttpClientError,
+    PkceCodeChallenge, RedirectUrl, RequestTokenError, Scope, StandardErrorResponse, TokenResponse,
     TokenUrl,
+    basic::{BasicClient, BasicErrorResponseType},
+    reqwest,
 };
 use url::Url;
 
-//struct for
+//struct for auth
 pub struct GoogleToken {
     pub access_token: String,
     pub token_type: String,
@@ -70,5 +69,5 @@ pub async fn auth(
         .request_async(&http_client)
         .await?;
 
-    ok(true)
+    Ok(true)
 }
