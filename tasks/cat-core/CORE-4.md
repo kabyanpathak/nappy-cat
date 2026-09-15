@@ -1,35 +1,30 @@
-# CORE-4: Ecosystem Rules & 5GB Quota Guard Engine
+# CORE-4: Pomodoro, Daily Tracking, and Rewards
 
-**Epic**: `CAT-CORE-EPIC` (The Shared Foundation)  
-**Component**: `crates/cat-core` (Business Logic & Quota Guard)  
-**Priority**: High  
-**Story Points**: 3 SP  
+**Component:** Pomodoro and progress modules in `crates/cat-core`
 
----
+**Priority:** High
 
-## 🎯 High-Level Goal & System Behavior
-Implement the software-enforced **5GB Quota Guard**. 
+**Status:** Planned
 
-Because Google Drive accounts provide large storage pools (e.g. 5TB), the ecosystem must strictly enforce a hard 5GB boundary per shared vault folder. The Quota Guard maintains remote state in `_meta/quota.json`, intercepts upload requests *before* network byte transfer occurs, rejects violating payloads, and provides functional auditing tools to recalculate usage.
+**Dependencies:** CORE-1 local storage and instance-ownership contracts
 
----
+## Goal
 
-## 🧭 Architectural Milestones
-*   [ ] **1. Quota State Schema & Remote Sync**: Define the `QuotaInfo` domain model and methods to fetch/persist state in `_meta/quota.json` on Google Drive.
-*   [ ] **2. Pre-Flight Quota Validator**: Implement the pre-upload validation guard ($	ext{used} + 	ext{incoming} \le 5	ext{GB}$) that short-circuits with a custom error before initiating file transfer.
-*   [ ] **3. Functional Usage Recalculator**: Write functional iterator pipelines (`.iter().map().sum()`) to audit and recalculate total storage usage across file collections in case of state desynchronization.
-*   [ ] **4. State Commit Pipeline**: Implement atomic post-upload increments and post-delete decrements on quota metadata.
+Build focus sessions and local progression for the productivity game. This replaces the vault quota engine.
 
----
+## Milestones
 
-## 🔒 Invariants & Mathematical Rules
-*   **Hard Cap Formula**:
-    $$	ext{used\_bytes} + 	ext{incoming\_file\_bytes} \le 5{,}368{,}709{,}120 	ext{ bytes (5 GB)}$$
-*   **Short-Circuit Guarantee**: Violating uploads must be aborted immediately without allocating network buffers.
+- [ ] Implement configurable focus/break durations and start, pause, resume, reset, and completion transitions using elapsed time, independent of rendering.
+- [ ] Record completed and interrupted sessions distinctly and publish events for UI, cat state, and optional notifications.
+- [ ] Track app-use time while Nappy Cat runs on an awake device, including background mode; exclude sleep and explicit tracking pauses. Do not monitor other apps.
+- [ ] Track focus time separately, excluding breaks and paused sessions.
+- [ ] Persist bounded checkpoints and local-date totals; split at midnight and handle clock/timezone changes.
+- [ ] Define sleep/wake and restart recovery so closed or suspended intervals do not silently become focus time or earned usage.
+- [ ] Prevent duplicate accounting across windows/processes.
+- [ ] Define tunable usage/session milestones, persist cosmetic unlocks once, and expose skin selection without gating productivity tools.
 
----
+## Acceptance
 
-## 📚 Documentation & Reference
-*   **Rust Functional Iterators**: [https://doc.rust-lang.org/book/ch13-00-functional-features.html](https://doc.rust-lang.org/book/ch13-00-functional-features.html)
-*   **Monadic Error Handling (`Result`)**: [https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html](https://doc.rust-lang.org/book/ch09-02-recoverable-errors-with-result.html)
-*   **`serde_json` Crate**: [https://docs.rs/serde_json/latest/serde_json/](https://docs.rs/serde_json/latest/serde_json/)
+Use controllable-time tests for transitions, pause/resume, sleep, midnight, clock changes, restart, and duplicate completion events. Daily totals and rewards survive restart without double counting. Core behavior works offline with no provider account.
+
+Keep Pomodoro separate from progress rules; combine tracking and rewards in the future `cat-progress` boundary. Rendering and animation belong to OPENCAT-3.

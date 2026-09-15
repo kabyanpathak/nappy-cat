@@ -1,34 +1,29 @@
-# OPENCAT-1: GUI Application State & Async Tokio Bridge
+# OPENCAT-1: Native Nappy Cat Shell and Async Bridge
 
-**Epic**: `OPENCAT-EPIC` (The Shared File Vault GUI)  
-**Component**: `apps/open-cat` (UI Architecture)  
-**Priority**: Blocker  
-**Story Points**: 5 SP  
+**Component:** `apps/open-cat`
 
----
+**Priority:** Foundation
 
-## 🎯 High-Level Goal & System Behavior
-Establish the desktop application window using `eframe`/`egui` and decouple the 60 FPS immediate-mode UI rendering loop from asynchronous network I/O.
+**Status:** Planned; existing binary is a console placeholder
 
-Using an Actor-style message passing pattern (MPSC channels), the UI thread stays silky-smooth and responsive while a dedicated background Tokio runtime handles heavy `cat-core` operations (authentication, file downloads, chunked uploads).
+**Dependencies:** CORE-1 module contracts
 
----
+## Goal
 
-## 🧭 Architectural Milestones
-*   [ ] **1. Message Protocol Definition**: Design strongly typed `AppCommand` (UI $ightarrow$ Worker) and `AppEvent` (Worker $ightarrow$ UI) enums to establish a clean boundary between UI rendering and network I/O.
-*   [ ] **2. Tokio Worker Runtime Isolation**: Spawn a background thread initializing a dedicated multi-threaded Tokio runtime that processes `cat-core` operations asynchronously.
-*   [ ] **3. Immediate-Mode UI Lifecycle (`eframe::App`)**: Implement the `eframe::App` state loop to non-blockingly drain event channels (`try_recv`), render UI panels, and signal immediate repaints on incoming events.
-*   [ ] **4. Error & Notification Drawer**: Build a toast/banner notification layer in the UI to display async errors and network statuses cleanly.
+Establish the native Rust app using the existing egui/eframe direction. Keep the package name `open-cat` while presenting Nappy Cat to users.
 
----
+## Milestones
 
-## 🔒 UI & Concurrency Invariants
-*   **60 FPS Guarantee**: Never perform blocking I/O, file reading, or `.await` calls inside `eframe::App::update()`.
-*   **Decoupled State**: The GUI layer must never talk to Google Drive directly; it only dispatches commands and reacts to events.
+- [ ] Create the native application state and shell with task, timer, progress, and connection entry points.
+- [ ] Define typed commands/events between GUI and domain/service modules.
+- [ ] Move network and storage work off the UI thread using an app-owned runtime and bounded channels.
+- [ ] Wake the UI for events and timer/animation deadlines; avoid continuous high-frame-rate rendering while idle.
+- [ ] Surface loading, account, offline, and error states without interrupting local tools.
+- [ ] Define worker cancellation, persistence flush, and clean shutdown.
+- [ ] Keep all window modes attached to one application state, ready for OPENCAT-3.
 
----
+## Acceptance
 
-## 📚 Documentation & Reference
-*   **`egui` Framework**: [https://docs.rs/egui/latest/egui/](https://docs.rs/egui/latest/egui/)
-*   **`eframe` Desktop Runner**: [https://docs.rs/eframe/latest/eframe/](https://docs.rs/eframe/latest/eframe/)
-*   **Tokio MPSC Channels**: [https://tokio.rs/tokio/tutorial/channels](https://tokio.rs/tokio/tutorial/channels)
+Slow I/O and failed connections do not freeze rendering or input. Start signed out without opening a browser. No persistent local server or webview is introduced. Verify worker shutdown and bounded event handling.
+
+GUI code dispatches domain operations rather than implementing provider APIs or timer/reward rules.

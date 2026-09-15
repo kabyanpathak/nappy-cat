@@ -1,36 +1,37 @@
-# CORE-3: Google Drive v3 REST API SDK & Domain Models
+# CORE-3: Local Tasks and Optional Linear Integration
 
-**Epic**: `CAT-CORE-EPIC` (The Shared Foundation)  
-**Component**: `crates/cat-core` (Network SDK & Data Layer)  
-**Priority**: High  
-**Story Points**: 5 SP  
+**Component:** Task, Linear auth, and Linear sync modules in `crates/cat-core`
 
----
+**Priority:** High
 
-## 🎯 High-Level Goal & System Behavior
-Encapsulate all Google Drive API v3 interactions into a strongly typed, asynchronous SDK client (`DriveClient`). 
+**Status:** Planned
 
-This SDK acts as the data layer for the entire ecosystem, isolating raw HTTP headers, JSON parsing, query formatting, and multipart/chunked protocols from the UI layer. It provides methods for vault folder initialization, paginated file exploration, chunked uploads with progress tracking, and zero-copy media buffering to temporary storage.
+**Dependencies:** CORE-1; milestone B follows milestone A, without depending on Google auth
 
----
+## Goal
 
-## 🧭 Architectural Milestones
-*   [ ] **1. Client & Error Architecture**: Design a `DriveClient` struct holding shared HTTP state (`reqwest::Client`) and an idiomatic error enum (`thiserror`) covering network, serialization, auth, and API errors.
-*   [ ] **2. Vault Scaffolding (Idempotent Bootstrap)**: Implement discovery and auto-creation of the `/open-cat/` root folder and hidden `_meta/` configuration directory.
-*   [ ] **3. Paginated File Listing**: Fetch and parse Drive file metadata into clean domain structs (`DriveFile`), handling parent folder query filtering and pagination tokens.
-*   [ ] **4. Resumable Chunked Upload Engine**: Implement Google Drive's resumable byte upload protocol for large files, supporting thread-safe progress callbacks without loading whole files into memory.
-*   [ ] **5. Temp-Buffer Media Downloader**: Stream remote media files directly into the OS temporary directory (`std::env::temp_dir()`) using zero-copy byte streams to enable native media player playback.
+Provide durable local tasks first, then let users connect Linear and create/update linked issues from Nappy Cat. This replaces the Drive SDK task.
 
----
+## Milestone A: Local tasks
 
-## 🔒 Systems & Memory Invariants
-*   **Zero-Copy Streaming**: Large uploads and downloads must stream in byte chunks; never buffer multi-gigabyte files into RAM.
-*   **Connection Reuse**: Share the `reqwest::Client` connection pool across async calls.
+- [ ] Support create, read, edit, complete/reopen, and delete with stable local IDs.
+- [ ] Persist changes through the local store, recover interrupted writes, and retain tasks across restart.
+- [ ] Define task events and errors for the native GUI; keep tasks usable offline and signed out.
 
----
+## Milestone B: Linear auth and sync
 
-## 📚 Documentation & Reference
-*   **Google Drive API v3 Reference**: [https://developers.google.com/drive/api/reference/rest/v3](https://developers.google.com/drive/api/reference/rest/v3)
-*   **Drive Resumable Uploads**: [https://developers.google.com/drive/api/guides/manage-uploads#resumable](https://developers.google.com/drive/api/guides/manage-uploads#resumable)
-*   **`thiserror` Crate**: [https://docs.rs/thiserror/latest/thiserror/](https://docs.rs/thiserror/latest/thiserror/)
-*   **`reqwest` Crate**: [https://docs.rs/reqwest/latest/reqwest/](https://docs.rs/reqwest/latest/reqwest/)
+- [ ] Verify official Linear native/public-client auth support, redirects, scopes, token lifecycle, and PKCE capabilities. Record incompatibilities before expanding architecture; do not embed a confidential secret.
+- [ ] Keep Linear credential lifecycle separate from Google auth, with secure storage, connect/disconnect, and actionable errors.
+- [ ] Let users select a workspace/team and explicitly opt tasks into linking or remote creation.
+- [ ] Read linked issues and create/update supported fields, including explicit mapping between local completion and Linear statuses.
+- [ ] Persist remote identifiers and a bounded pending-operation queue. Show pending, synced, failed, and conflict states.
+- [ ] Support manual refresh and modest polling, rate-limit handling, bounded retries, and offline recovery without a public webhook server.
+- [ ] Reconcile ambiguous remote-create outcomes before retrying; prevent duplicate issue creation.
+- [ ] Detect concurrent edits and provide conflict resolution. Local deletion unlinks by default; remote deletion is outside initial scope.
+- [ ] On disconnect, stop sync and preserve local tasks; handle account changes without sending queued work to the wrong destination.
+
+## Acceptance
+
+Verify local CRUD/restart recovery first. Then validate reading, creating, and updating a linked issue, revoked credentials, outages, rate limits, ambiguous timeouts, and conflicts. Local work remains available during provider failures. No personal task is sent remotely without the user's explicit choice.
+
+Keep future `cat-tasks`, `cat-linear-auth`, and `cat-linear` responsibilities distinct within the current library.

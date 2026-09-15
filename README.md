@@ -1,121 +1,65 @@
-# 🐾 The Cat Ecosystem
+# Nappy Cat
 
-> **A 100% Rust, Low-Memory Personal Cloud & Productivity Suite Powered by Google Drive (5TB)**
+> Your all-in-one productivity game: a small native desktop companion, built in Rust.
 
-Welcome to the **Cat Ecosystem**! This repository houses a modular suite of lightweight, native desktop applications and microservices. Built on a **"Thick Core, Thin Client"** architecture, the ecosystem uses **Google Drive** as a personal cloud backend with zero persistent local web servers or background daemons, running entirely on native, featherlight Rust binaries (< 35MB RAM).
+Nappy Cat combines a Pomodoro timer, daily app-time tracking, a task list, and an animated cat. Focus, finish tasks, and unlock cosmetic rewards such as cat skins. Keep the cat beside your work, open a compact popup, or switch to full screen.
 
----
+The philosophy stays simple: minimal UI, a small footprint, and quiet background operation. All application code is Rust, with a native GUI, no embedded browser or web frontend, and browser use only for authentication. The finalized app targets **less than 100 MB of runtime memory**; package size and CPU usage will also be measured. This is a target, not a verified result.
 
-## 🏗️ Architectural Philosophy: Thick Core, Thin Client
+## Build the essentials first
 
-The ecosystem is designed around a single, powerful shared engine (`cat-core`) that acts as the SDK for all applications. Microservices (`open-cat`, `cat-db`, etc.) remain thin UI shells responsible only for rendering pixels and dispatching actions.
+- Pomodoro focus and break sessions with pause, resume, and reset.
+- Local tasks that work without an account or internet connection.
+- Daily time spent running Nappy Cat, with focus time shown separately.
+- An animated cat with cosmetic unlocks.
+- Always-on-top cat, compact popup, and full-screen modes sharing one app state.
+- Optional Google OAuth 2.0 sign-in, retained from the original direction.
+- Optional Linear connection: view linked tasks and create or update them from Nappy Cat.
 
-```mermaid
-flowchart TB
-    subgraph Storage["Google Drive 5TB Storage Pool"]
-        OpenCatFolder["/open-cat/ (Shared Vault & 5GB Quota)"]
-        CatDbFolder["/cat-db/ (Document DB Collections)"]
-        WareCatFolder["/ware-cat/ (Data Warehouse & Git Blobs)"]
-    end
+After the timer and Linear tasks work, investigate YouTube Music first, then Spotify. Native playback capabilities and account requirements must be validated before promising either integration; Google sign-in alone does not establish music access. Gmail and other integrations are later possibilities.
 
-    subgraph CoreEngine["crates/cat-core (Shared Engine & SDK)"]
-        Auth["OAuth 2.0 PKCE\n(Ephemeral Loopback Listener)"]
-        DriveREST["Drive REST API Client\n(Listing, Chunked Upload, Temp-Buffer)"]
-        Quota["Software Quota Guard\n(5GB Software Boundary & Rules)"]
-    end
+Google Drive is no longer the storage backend. The file vault, Drive database, warehouse, Git hosting, quotas, and sharing-key projects are retired from the roadmap. Tasks, sessions, settings, and rewards will be stored locally.
 
-    subgraph Apps["The Desktop Application Suite (Thin Clients)"]
-        App1["🐱 open-cat\n(Dropbox / Vault GUI)"]
-        App2["🗄️ cat-db\n(Document DB GUI)"]
-        App3["🐾 fidget-cat\n(2D Pomodoro & Pet Widget)"]
-        App4["📦 ware-cat\n(Data Warehouse / Cold Storage)"]
-        App5["🐙 git-cat\n(Git Remote & Backup)"]
-    end
+## Current implementation and structure
 
-    CoreEngine --> Apps
-    App1 <--> OpenCatFolder
-    App2 <--> CatDbFolder
-    App3 -->|"Logs sessions"| App2
-    App4 <--> WareCatFolder
-    App5 -->|"Stores Bundles"| App4
-    App5 -->|"Stores Metadata"| App2
-```
+The repository contains a Cargo workspace, an early Google OAuth scaffold, and an `open-cat` binary that currently prints “Hello, world!”. The productivity features and GUI are planned; authentication still needs completion and verification.
 
----
-
-## ⚙️ The Core Engine: `crates/cat-core`
-
-`cat-core` is a shared Rust library (`lib.rs`) compiled directly into all applications. It encapsulates:
-
-1. **OAuth 2.0 PKCE (Ephemeral Loopback)**: Binds to a dynamic OS port (`127.0.0.1:0`) only during sign-in, extracts the authorization code, and drops the listener immediately. Zero persistent open ports.
-2. **Drive REST SDK**: Async `reqwest` client managing folder discovery (`/open-cat/` & `_meta/`), paginated file listing, resumable chunked uploads, and temp-buffering downloads.
-3. **Software Quota Guard & Rules**: Enforces the 5GB folder constraint ($\text{used} + \text{incoming} \le 5\text{GB}$) by maintaining `_meta/quota.json` on Google Drive.
-
----
-
-## 🐈 The Microservice Suite (Thin Desktop Apps)
-
-#### 1. `open-cat` (The Shared File Vault)
-A personal Dropbox and photo vault with a native `egui` interface.
-* **Dropzone:** Drag-and-drop file upload with live progress bars.
-* **Quota Gauge:** Visual 5GB capacity meter.
-* **Native Media Playback:** Downloads media into the OS temporary directory (`std::env::temp_dir()`) and spawns the native media player (VLC/QuickTime) without local HTTP proxy overhead.
-* **Sharing Keys:** Distributable base64 keys to share vaults with friends.
-
-#### 2. `cat-db` (The Document Database Manager)
-A visual NoSQL Document Store GUI turning a Google Drive folder into a document database with sub-millisecond in-memory manifest caching.
-
-#### 3. `fidget-cat` (The Productivity Desk Pet)
-An always-on-top 2D desktop widget featuring an animated pet and a Pomodoro timer that automatically logs focus sessions into `cat-db`.
-
-#### 4. `ware-cat` (The Data Warehouse & Archive)
-Cold storage and analytical data lake managing append-only JSONL / Parquet logs with SHA-256 integrity verification.
-
-#### 5. `git-cat` (Git Remote on Google Drive)
-Host private Git repositories directly on Google Drive by archiving Git bundles into `ware-cat` and indexing commits in `cat-db`.
-
----
-
-## 🛠️ Technology Stack & Paradigms
-
-* **Language:** 100% Rust 🦀
-* **Architecture:** Thick Core SDK (`cat-core`) + Thin Immediate-Mode GUIs (`egui` / `eframe`)
-* **Paradigms:**
-  * **OOP:** Clean encapsulation via Structs and `impl` blocks (e.g., `DriveClient`).
-  * **Functional Programming (FP):** Iterator pipelines (`.map()`, `.filter()`, `.sum()`), monadic error handling (`Result`/`Option`), and UI closure trees.
-* **Async Runtime:** `tokio` (Multi-threaded background task execution decoupled from 60 FPS UI loops).
-* **Backend:** Google Drive API v3 (`https://www.googleapis.com/auth/drive.file` isolated scope).
-
----
-
-## 📁 Workspace Layout
+The product name is **Nappy Cat**. Existing package names, task IDs, and directories remain unchanged during this documentation transition.
 
 ```text
 nappy-cat/
+├── Cargo.toml
+├── Cargo.lock
 ├── crates/
-│   └── cat-core/           # Shared Engine, OAuth PKCE, Drive SDK, Quota Guard
+│   └── cat-core/          # Existing library; future domain and service modules
 ├── apps/
-│   ├── open-cat/           # App 1: Vault GUI
-│   ├── cat-db/             # App 2: Document DB GUI
-│   ├── fidget-cat/         # App 3: 2D Pomodoro & Pet
-│   ├── ware-cat/           # App 4: Data Warehouse & Blobs
-│   └── git-cat/            # App 5: Git Remote & Manager
+│   └── open-cat/          # Existing binary; future Nappy Cat native app
 ├── tasks/
-│   ├── cat-core/           # Core SDK Jira tasks (CORE-1 to CORE-4)
-│   └── open-cat/           # GUI client Jira tasks (OPENCAT-1 to OPENCAT-4)
+│   ├── cat-core/          # CORE-1 through CORE-4
+│   └── open-cat/          # OPENCAT-1 through OPENCAT-4
+├── CAT_ECOSYSTEM_MASTER_SPEC.md
 └── README.md
 ```
 
----
+Start with modules in these crates, then extract libraries as features grow. Planned boundaries cover Google auth, Linear auth, Linear sync, local tasks, Pomodoro, tracking and rewards, cat animation, GUI, and music. Keep all window modes in one GUI boundary and music providers in one music boundary initially. These are future design boundaries, not new workspace members.
 
-## 💻 Getting Started
+## Roadmap
 
-This repository is configured as a Cargo workspace. To build and test:
+| Stage | Work | Tasks |
+| --- | --- | --- |
+| Foundation | Preserve workspace, define storage, build native shell, complete optional Google auth | [CORE-1](tasks/cat-core/CORE-1.md), [OPENCAT-1](tasks/open-cat/OPENCAT-1.md), [CORE-2](tasks/cat-core/CORE-2.md) |
+| Local productivity | Tasks, Pomodoro, daily tracking, rewards, and their views | [CORE-3](tasks/cat-core/CORE-3.md), [CORE-4](tasks/cat-core/CORE-4.md), [OPENCAT-2](tasks/open-cat/OPENCAT-2.md) |
+| Connected companion | Linear auth/sync, cat animation, and all window modes | [CORE-3](tasks/cat-core/CORE-3.md), [OPENCAT-3](tasks/open-cat/OPENCAT-3.md) |
+| Release, then music | Reliability and footprint checks; YouTube Music feasibility before Spotify | [OPENCAT-4](tasks/open-cat/OPENCAT-4.md) |
+
+The [master specification](CAT_ECOSYSTEM_MASTER_SPEC.md) defines behavior, architecture, and release criteria. Existing task IDs now describe the new product; their old Drive-related scope is superseded.
+
+## Development commands
 
 ```bash
-# Verify all workspace crates compile cleanly
 cargo check --workspace
-
-# Run the Open-Cat desktop GUI
+cargo test --workspace
 cargo run --bin open-cat
 ```
+
+These commands target the existing packages. Running the binary does not yet launch a GUI. The OAuth scaffold is unfinished; this documentation update does not establish a passing build.

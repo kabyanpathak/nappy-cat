@@ -1,181 +1,121 @@
-# The Cat Ecosystem: Master Project Specification & Blueprint
-> **A 100% Rust, Low-Memory Personal Cloud & Productivity Suite Powered by Google Drive (5TB)**
+# Nappy Cat: Product and Architecture Specification
 
----
+> A small, standalone productivity game with a native Rust GUI.
 
-## 0. AI Operating Rules & Collaboration Guidelines
+This specification replaces the Google Drive application suite. Its filename and existing workspace paths remain stable. Features below are planned unless explicitly identified as existing.
 
-> [!IMPORTANT]
-> ### 🛡️ ROLE OF THE AI ASSISTANT (Senior Architect & Engineering Manager)
-> When this specification is provided to Antigravity (or any AI assistant on your development machine), the AI must strictly adhere to the following rules:
->
-> 1. **Architectural & Planning Guide**: Break down features into clear, bite-sized tasks, architectural diagrams, data flows, and checklists that the developer can read and implement.
-> 2. **Documentation & Reference Source**: Explain complex protocols, Google Drive API behaviors, `egui` lifecycle patterns, and Rust borrow checker concepts in plain English.
-> 3. **NO UNSOLICITED CODE**: 
->    * **The AI MUST NOT write the project code.**
->    * **The AI MUST NOT output full implementation code or copy-paste code snippets unless the user EXPLICITLY asks** (e.g., *"Show me the code for this function"* or *"Write this struct for me"*).
-> 4. **Senior Tech Lead Persona**: Act as a technical mentor / engineering manager. Review the developer's code when asked, explain compiler errors, suggest design improvements, and point out edge cases.
+## 0. Collaboration guidelines
 
----
+Help the developer break features into clear tasks, explain design choices, and review implementation when requested. Do not write application code or full implementation snippets unless explicitly asked. This transition updates documentation and tasks only; crate creation, renames, dependency changes, and implementation are outside its scope.
 
-## 1. Executive Summary & Philosophy
+## 1. Product and constraints
 
-The **Cat Ecosystem** is a modular suite of lightweight personal desktop applications and microservices written in **100% Rust**, backed by a 5TB Google Drive storage pool.
+Nappy Cat is one desktop app combining focus tools with an animated cat. It should help people manage daily work without opening a productivity website.
 
-### Core Architectural Principles:
-1. **True Standalone Architecture**: No persistent local web servers or background daemons. Apps manage their own async runtimes, ephemeral OS listeners for auth, and native OS integrations.
-2. **Featherlight Footprint**: No Garbage Collection, no Electron, no Chromium overhead. GUI runs at **< 35 MB RAM**.
-3. **Simple, Idiomatic Rust**: Standard data structs (`serde`), `tokio` async networking, MPSC channels, and native `egui` immediate-mode GUIs.
-4. **Google Drive as Personal Cloud**: Uses the isolated `https://www.googleapis.com/auth/drive.file` scope. The apps only see files they create.
-5. **Single-User Coherence**: The apps seamlessly cross-integrate: `fidget-cat` stores streak metadata in `cat-db`, `git-cat` archives packfiles in `ware-cat`, and `open-cat` shares files with friends under strict 5GB quotas.
+- **Small and quiet:** target less than 100 MB runtime memory in the finalized release. This interprets “< 100 MB” as memory; measure package size separately and keep it compact too. Compliance has not been measured.
+- **Rust and native UI:** 100% Rust application code, following the existing `egui`/`eframe` direction. No Electron, embedded webview, JavaScript frontend, or persistent local web server. Normal OS windowing and credential services are allowed.
+- **Browser only for auth:** task editing, settings, and any music controls stay in the native GUI. HTTPS service API calls are allowed.
+- **Local first:** tasks, timers, daily totals, rewards, and settings work without an account. Google Drive is not the storage backend.
+- **Optional connections:** retain Google OAuth 2.0; add Linear tasks. Music follows a working timer and Linear workflow.
+- **Background operation:** the app may stay unobtrusive as a desktop cat or in the background, without a separate always-running service. Suspend unnecessary animation and network work when hidden or idle.
 
----
+File vaults, Drive database GUIs, quota guards, sharing keys, warehouses, and Git hosting are retired. Gmail and other providers are future ideas, outside the initial release.
 
-## 2. The 5 Microservices + Core Engine
+## 2. User experience
 
-```mermaid
-flowchart TB
-    subgraph Storage["Google Drive 5TB Storage Pool"]
-        OpenCatFolder["/open-cat/ (Shared Vault & 5GB Quota)"]
-        CatDbFolder["/cat-db/ (Document DB Collections)"]
-        WareCatFolder["/ware-cat/ (Data Warehouse & Git Blobs)"]
-    end
+### Pomodoro
 
-    subgraph CoreEngine["crates/cat-core (Shared Library)"]
-        Auth["OAuth 2.0 (Ephemeral Listener)"]
-        DriveREST["Drive REST API Client"]
-        Quota["Software Quota Guard"]
-    end
+Provide configurable focus and break lengths, start/pause/resume/reset, completion feedback, and a visible next action. Record completed and interrupted sessions distinctly. Derive time from elapsed-time state, not render frames. Sleep, restarts, and clock changes must not silently award focus time. Notifications and sounds are optional.
 
-    subgraph Apps["The Desktop Application Suite (Standalone)"]
-        App1["🐱 open-cat\n(Dropbox / Media Vault with Quota)"]
-        App2["🗄️ cat-db\n(Document Database Manager)"]
-        App3["🐾 fidget-cat\n(2D Pomodoro & Pet Widget)"]
-        App4["📦 ware-cat\n(Data Warehouse / Cold Storage)"]
-        App5["🐙 git-cat\n(Git on Google Drive & Remote Backup)"]
-    end
+### Tasks and Linear
 
-    CoreEngine --> Apps
-    App1 <--> OpenCatFolder
-    App2 <--> CatDbFolder
-    App3 -->|"Logs stats & sessions"| App2
-    App4 <--> WareCatFolder
-    App5 -->|"Stores Git Bundles & Packfiles"| App4
-    App5 -->|"Stores Repo Metadata"| App2
-```
+Local tasks support creation, editing, completion, and deletion with stable identifiers and durable storage. A task may link to a Linear issue. Users explicitly choose what to send and its destination workspace/team; personal tasks are not automatically published.
 
----
+Initial Linear scope: read linked issues, create issues from local tasks, and update supported fields such as title, description, and completion/status. Map provider statuses explicitly. Show pending, synced, failed, and conflict states. Refresh manually and on a modest schedule while connected, without requiring a public webhook server. Local deletion unlinks by default; remote deletion is outside initial sync scope.
 
-### App 1: `open-cat` (The Shared File Vault)
-* **Purpose**: A personal Dropbox/photo vault with drag-and-drop upload and video playback.
-* **Features**:
-  * Standalone `egui` GUI with a clean dropzone.
-  * **5GB Quota Guard**: Hard software-enforced 5GB cap per shared folder via `_meta/quota.json`.
-  * **Friend Sharing**: Distributable configuration key scoped strictly to the `open-cat` folder.
-  * **Media Playback**: Downloads media to OS temp directory and securely launches native players (VLC/mpv).
+### Daily tracking and rewards
 
----
+Show app-use time and focus time separately. Initially, app-use time means time Nappy Cat is running while the device is awake, including background mode. Do not monitor other applications. Explicitly paused tracking and system sleep do not count; focus time counts only during an active, unpaused focus session.
 
-### App 2: `cat-db` (The Document Database Manager)
-* **Purpose**: A visual NoSQL Document Store GUI that turns a Google Drive folder into a database.
+Persist bounded checkpoints and daily totals in the user's local timezone. Split intervals at midnight, handle timezone/clock changes without double-counting, and prevent multiple windows or processes from duplicating time. Restart recovery must not count the closed interval as usage.
 
----
+Award cosmetic unlocks such as skins from recorded usage and completed focus sessions. Award each milestone once, preserve unlocks offline, and avoid punitive loss of progress. Thresholds can be tuned later; basic productivity tools are never reward-gated.
 
-### App 3: `fidget-cat` (The Productivity Desk Pet)
-* **Purpose**: A tiny, always-on-top 2D desktop widget for focus and fun.
+### Cat and window modes
 
----
+| Mode | Intended use |
+| --- | --- |
+| Always-on-top cat | Small movable companion, timer summary, and access to controls |
+| Compact popup | Quick task entry, timer controls, and today's progress |
+| Full screen | Expanded tasks, history, rewards, and settings |
 
-### App 4: `ware-cat` (The Data Warehouse & Archive)
-* **Purpose**: Cold storage, large immutable blob archiving, and analytical data lake on Google Drive.
+All modes share one state. Switching must not reset sessions, duplicate tracking, or lose edits. Provide obvious full-screen exit and recovery of hidden/off-screen windows. Always-on-top is user controlled. Verify platform support for transparency and special window behavior; provide a normal compact-window fallback.
 
----
+Cat states include idle, focus, break, and celebration. Keep assets small, cache only what is needed, support reduced motion, and avoid permanent high-frame-rate repainting.
 
-### App 5: `git-cat` (Git Remote & Hosting on Google Drive)
-* **Purpose**: Host private Git repositories directly on your Google Drive without third-party services.
+### Music after the basics
 
----
+Investigate YouTube Music first, then Spotify, through one shared music boundary. Verify official provider capabilities, authorization, playback rights, subscription requirements, and compatibility with native Rust and the memory target before implementation. Distinguish direct in-app playback from remote control of another player.
 
-## 3. Cargo Workspace Layout
+Google login does not establish permission or a supported mechanism for YouTube Music playback. If a provider cannot meet the constraints, record the limitation and defer it. A webview, browser player, scraping flow, or external-player dependency is not an automatic fallback. Add playback controls only where verified capabilities support them.
 
-```text
-cat-ecosystem/
-├── Cargo.toml
-├── crates/
-│   └── cat-core/               # Shared Drive API, OAuth, Quotas, Models
-├── apps/
-│   ├── open-cat/               # App 1: Vault GUI
-│   ├── cat-db/                 # App 2: Document DB GUI
-│   ├── fidget-cat/             # App 3: 2D Pomodoro & Pet
-│   ├── ware-cat/               # App 4: Data Warehouse & Blobs
-│   └── git-cat/                # App 5: Git Remote & Manager
-└── README.md
-```
+## 3. Current workspace and future boundaries
 
-### `Cargo.toml` (Root Workspace)
-```toml
-[workspace]
-resolver = "2"
-members = [
-    "crates/cat-core",
-    "apps/open-cat",
-    "apps/cat-db",
-    "apps/fidget-cat",
-    "apps/ware-cat",
-    "apps/git-cat",
-]
+The workspace currently contains `crates/cat-core` and `apps/open-cat`. The library has an early auth scaffold; the binary is a console placeholder. Google auth and productivity features are not complete. Nappy Cat is the product name; `open-cat` remains the executable/package name for now.
 
-[workspace.dependencies]
-tokio = { version = "1.37", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-reqwest = { version = "0.12", features = ["json", "stream", "multipart"] }
-eframe = "0.27"
-egui = "0.27"
-open = "5.1"
-rfd = "0.14"
-git2 = "0.18"
-```
+Keep the existing `crates/`, `apps/`, and `tasks/` layout. Begin with modules; extract crates only when their implementation or dependencies justify it. These are provisional future names, not new workspace members:
 
----
+| Boundary / possible crate | Responsibility | Initial home |
+| --- | --- | --- |
+| `cat-core` | Shared identifiers, errors, storage interfaces, orchestration | Existing library |
+| `cat-google-auth` | Google OAuth and account lifecycle | Existing library |
+| `cat-linear-auth` | Linear authorization and credentials | Existing library |
+| `cat-tasks` | Local task model and operations | Existing library |
+| `cat-linear` | Linear API adapter, issue mapping, sync queue | Existing library |
+| `cat-pomodoro` | Timer state machine and session events | Existing library |
+| `cat-progress` | Daily totals and cosmetic reward rules | Existing library |
+| `cat-pet` | Cat states, skins, animation | Existing app |
+| `cat-gui` | Shared views and all three window modes | Existing app |
+| `cat-music` | Common playback model and separate provider adapters | Deferred; service logic in library, controls in app |
 
-## 4. Technical Rules (Standalone App Standards)
+Combine tracking with rewards, all GUI modes together, and music providers together initially. These are in-process libraries, not separate microservices or desktop products.
 
-1. **Authentication (Ephemeral Loopback)**:
-   * The app MUST NOT run a persistent background web server.
-   * To authenticate, the app binds a `std::net::TcpListener` to `127.0.0.1:0` (OS assigns a random free port).
-   * The app extracts the port, generates the Google OAuth URL with `redirect_uri=http://127.0.0.1:<PORT>`, and opens the browser.
-   * Upon receiving the HTTP callback, the listener processes the code and is immediately dropped.
-2. **Quota Guard Formula**:
-   $$\text{used\_bytes} + \text{incoming\_file\_bytes} \le \text{max\_allowed\_bytes}$$
-   *If violated, reject immediately before initiating byte transfer.*
-3. **Media Playback**:
-   * The app MUST NOT proxy media via localhost.
-   * Instead, fetch the file via Drive API `alt=media`, buffer it into `std::env::temp_dir()`, and launch the native OS media player against the local temp file.
+The GUI sends typed commands to domain/service modules and receives events through bounded channels. Domain logic is independent of rendering. Network/storage work must not block the UI thread. The app owns its runtime and cancels workers on exit.
 
----
+## 4. Storage, auth, and network rules
 
-## 5. Development Roadmap & Task Progression
+- Choose a compact versioned local store in CORE-1. Persist tasks, sessions, daily totals, unlocks, settings, provider mappings, and pending sync operations in the OS application-data directory. Specify atomic commits, migrations, and interrupted-write recovery.
+- Keep credentials separate from productivity data and logs. Prefer OS credential storage; document a secure fallback before using one. Disconnect clears local credentials and stops provider requests while preserving local work.
+- Complete Google OAuth 2.0 with PKCE and state validation. A temporary loopback listener may exist only during sign-in; close it on success, cancellation, error, or timeout. Remove Drive access from the planned login requirements. Choose minimal scopes for actual features and request additional access only when needed.
+- Treat Linear auth as a separate provider boundary. Confirm its supported native/public-client flow, redirect requirements, and PKCE support before implementation. Do not embed a confidential client secret in a distributed binary. Record any incompatibility before expanding architecture.
+- Reuse network clients, bound retries and queues, honor rate limits, and surface errors. Provider outages must not stop local tasks or timers.
+- Persist sync operation identity before remote creation. Reconcile ambiguous timeouts before retrying to avoid duplicate issues. Define conflict behavior without silently overwriting concurrent edits.
 
-### Phase 1: Shared Core (`crates/cat-core`)
-- [ ] Initialize Cargo workspace (without daemon).
-- [ ] Implement OAuth 2.0 PKCE flow using Ephemeral Ports (`127.0.0.1:0`).
-- [ ] Implement Google Drive v3 REST Client (Folder create/find, list, chunked upload, download).
-- [ ] Implement Quota Guard (`_quota.json` read/write/verify).
+Implementation tasks must verify current official provider documentation. These are requirements, not claims that every provider supports the desired flow.
 
-### Phase 2: The File Vault (`apps/open-cat`)
-- [ ] `eframe` window with internal Tokio runtime and MPSC channels.
-- [ ] Drag-and-drop dropzone & 5GB visual storage gauge.
-- [ ] File grid with download and VLC temp-playback actions.
+## 5. Roadmap
 
-### Phase 3: Document Database (`apps/cat-db`)
-- [ ] Empty folder initializer.
-- [ ] Visual collection tree & JSON document inspector.
+| Stage | Task | Outcome |
+| --- | --- | --- |
+| Foundation | CORE-1 | Workspace preserved; module and storage contracts agreed |
+| Foundation | OPENCAT-1 | Native shell and responsive command/event bridge |
+| Optional account support | CORE-2 | Google OAuth without Drive coupling |
+| Local productivity | CORE-3 A, CORE-4, OPENCAT-2 | Durable tasks, timer, tracking, rewards, and views |
+| Connected tasks | CORE-3 B | Linear auth, mapping, and reliable sync |
+| Desktop companion | OPENCAT-3 | Animated cat, skins, and three modes |
+| Core release | OPENCAT-4 A | Reliability, accessibility, packaging, and footprint verified |
+| Later music | OPENCAT-4 B | YouTube Music feasibility first, then Spotify; supported native implementation |
 
-### Phase 4: Productivity Pet (`apps/fidget-cat`)
-- [ ] Lightweight 2D floating window with custom `egui::Painter`.
-- [ ] Pomodoro work/break timer state machine syncing to `cat-db`.
+Local productivity does not depend on provider login. Linear depends on local tasks, not Google auth. Music waits until the timer and Linear work. The eight existing task IDs remain; previous scope and completion assumptions are superseded.
 
-### Phase 5: Warehouse & Git (`apps/ware-cat` & `apps/git-cat`)
-- [ ] Chunked archive manager.
-- [ ] Git repository packfile/bundle exporter (`git2` crate).
+## 6. Release acceptance
+
+- Start without an account; create tasks, run sessions, and retain totals/unlocks after restart.
+- Connect/disconnect Google independently; connect Linear and create/update an issue from the native GUI.
+- Recover from outages, revoked credentials, ambiguous writes, and concurrent edits without losing local work or duplicating issues.
+- Switch all window modes without duplicating state. Verify reduced motion, keyboard controls, readable text, and optional notifications.
+- Exercise pause/resume, sleep/wake, midnight, clock/timezone changes, restart, and duplicate-instance handling.
+- Measure release-build process memory on every supported OS in idle-cat, popup, full-screen, focus, and Linear-sync scenarios with representative data. Record platform, dataset, measurement method, steady-state values, and peaks. Target less than 100 MB runtime memory and report over-budget cases. Record package size and idle CPU separately; compiler size flags do not prove low memory use.
+- Recheck footprint when music is added, including playback workers. Ship no persistent local server or web frontend and require no browser use outside authentication.
+
+Supported platforms and reward thresholds remain implementation decisions. This documentation update certifies no build, provider support, or performance result.
