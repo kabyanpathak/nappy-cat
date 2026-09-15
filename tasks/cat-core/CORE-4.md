@@ -2,7 +2,7 @@
 
 **Component:** Pomodoro and progress modules in `crates/cat-core`
 
-**Priority:** High
+**Priority:** Pomodoro first; full tracking and rewards after YouTube Music
 
 **Status:** Planned
 
@@ -12,10 +12,12 @@
 
 Build focus sessions and local progression for the productivity game. This replaces the vault quota engine.
 
-## Milestones
+## Milestone A: Pomodoro first
 
 - [ ] Implement configurable focus/break durations and start, pause, resume, reset, and completion transitions using elapsed time, independent of rendering.
 - [ ] Record completed and interrupted sessions distinctly and publish events for UI, cat state, and optional notifications.
+## Milestone B: Tracking and initial rewards, after OPENCAT-4 A
+
 - [ ] Track app-use time while Nappy Cat runs on an awake device, including background mode; exclude sleep and explicit tracking pauses. Do not monitor other apps.
 - [ ] Track focus time separately, excluding breaks and paused sessions.
 - [ ] Persist bounded checkpoints and local-date totals; split at midnight and handle clock/timezone changes.
@@ -25,6 +27,6 @@ Build focus sessions and local progression for the productivity game. This repla
 
 ## Acceptance
 
-Use controllable-time tests for transitions, pause/resume, sleep, midnight, clock changes, restart, and duplicate completion events. Daily totals and rewards survive restart without double counting. Core behavior works offline with no provider account.
+Accept milestone A independently with controllable-time tests for timer transitions, pause/resume, sleep, and restart. It does not depend on daily tracking, rewards, or tasks. For milestone B, also verify midnight, clock changes, and duplicate completion events. Daily totals and rewards survive restart without double counting. Core behavior works offline with no provider account.
 
 Keep Pomodoro separate from progress rules; combine tracking and rewards in the future `cat-progress` boundary. Rendering and animation belong to OPENCAT-3.

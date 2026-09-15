@@ -29,11 +29,13 @@ Provide configurable focus and break lengths, start/pause/resume/reset, completi
 
 ### Tasks and Linear
 
-Local tasks support creation, editing, completion, and deletion with stable identifiers and durable storage. A task may link to a Linear issue. Users explicitly choose what to send and its destination workspace/team; personal tasks are not automatically published.
+Build tasks with Linear after Pomodoro. The underlying task model and local persistence support linked issues and offline recovery; a separate local-only to-do experience is optional and follows the Linear workflow. That small list may be built directly or adapted from a suitable Rust project after checking its license, dependencies, and footprint. It must not become a large prerequisite for music. Local tasks, when enabled, support creation, editing, completion, and deletion with stable identifiers. Users explicitly choose what to send and its destination workspace/team; personal tasks are not automatically published.
 
 Initial Linear scope: read linked issues, create issues from local tasks, and update supported fields such as title, description, and completion/status. Map provider statuses explicitly. Show pending, synced, failed, and conflict states. Refresh manually and on a modest schedule while connected, without requiring a public webhook server. Local deletion unlinks by default; remote deletion is outside initial sync scope.
 
 ### Daily tracking and rewards
+
+Implement full daily tracking and rewards with the first extras after YouTube Music. Pomodoro initially needs only its session timing and records.
 
 Show app-use time and focus time separately. Initially, app-use time means time Nappy Cat is running while the device is awake, including background mode. Do not monitor other applications. Explicitly paused tracking and system sleep do not count; focus time counts only during an active, unpaused focus session.
 
@@ -53,9 +55,9 @@ All modes share one state. Switching must not reset sessions, duplicate tracking
 
 Cat states include idle, focus, break, and celebration. Keep assets small, cache only what is needed, support reduced motion, and avoid permanent high-frame-rate repainting.
 
-### Music after the basics
+### Music as a priority feature
 
-Investigate YouTube Music first, then Spotify, through one shared music boundary. Verify official provider capabilities, authorization, playback rights, subscription requirements, and compatibility with native Rust and the memory target before implementation. Distinguish direct in-app playback from remote control of another player.
+After Pomodoro, tasks with Linear, and the optional small to-do list, prioritize YouTube Music before animated cats and other extras. Then build a substantial first pass of those extras to make the app more presentable, add Spotify, and finish the remaining extras. Both providers share one music boundary. A finished game or final release is not a prerequisite for music. Verify official provider capabilities, authorization, playback rights, subscription requirements, and compatibility with native Rust and the memory target before implementation. Distinguish direct in-app playback from remote control of another player.
 
 Google login does not establish permission or a supported mechanism for YouTube Music playback. If a provider cannot meet the constraints, record the limitation and defer it. A webview, browser player, scraping flow, or external-player dependency is not an automatic fallback. Add playback controls only where verified capabilities support them.
 
@@ -76,9 +78,50 @@ Keep the existing `crates/`, `apps/`, and `tasks/` layout. Begin with modules; e
 | `cat-progress` | Daily totals and cosmetic reward rules | Existing library |
 | `cat-pet` | Cat states, skins, animation | Existing app |
 | `cat-gui` | Shared views and all three window modes | Existing app |
-| `cat-music` | Common playback model and separate provider adapters | Deferred; service logic in library, controls in app |
+| `cat-music` | Common playback model and separate provider adapters | Service logic in library, controls in app; YouTube Music before extras |
 
 Combine tracking with rewards, all GUI modes together, and music providers together initially. These are in-process libraries, not separate microservices or desktop products.
+
+### Future file structure goal
+
+This is a target layout for gradual extraction, not the current tree or a request to create crates now. Retain `apps/open-cat` as the entry point; Nappy Cat remains the product name. Each extracted crate will have its own `Cargo.toml` and `src/lib.rs`; the app keeps `src/main.rs`.
+
+```text
+nappy-cat/
+├── Cargo.toml
+├── Cargo.lock
+├── apps/
+│   └── open-cat/                 # Thin native app entry point and composition
+├── crates/
+│   ├── cat-core/                 # Shared types and local storage interfaces
+│   ├── cat-pomodoro/             # Focus/break state and session records
+│   ├── cat-tasks/                # Task model; optional simple local to-do
+│   ├── cat-linear-auth/          # Linear login and credential lifecycle
+│   ├── cat-linear/               # Linear issue adapter and sync
+│   ├── cat-google-auth/          # Retained Google OAuth
+│   ├── cat-music/
+│   │   └── src/
+│   │       ├── lib.rs            # Shared playback state and interface
+│   │       ├── youtube_music.rs # First provider, subject to feasibility
+│   │       └── spotify.rs       # Added after first extras
+│   ├── cat-progress/             # Daily tracking and rewards
+│   ├── cat-pet/                  # Cat state, skins, and animation
+│   └── cat-gui/
+│       └── src/
+│           ├── lib.rs            # Shared native views and app commands
+│           └── modes/
+│               ├── mod.rs
+│               ├── companion.rs # Always-on-top cat
+│               ├── popup.rs     # Compact controls
+│               └── fullscreen.rs
+├── tasks/
+│   ├── cat-core/                 # Retain existing CORE task IDs
+│   └── open-cat/                 # Retain existing OPENCAT task IDs
+├── CAT_ECOSYSTEM_MASTER_SPEC.md
+└── README.md
+```
+
+Crate extraction follows actual feature work, not tree order. GUI modes remain modules in one crate, music providers remain modules in one crate, and tracking/rewards stay together. Adapted to-do code belongs behind the task boundary rather than becoming another desktop application. Keep shared contracts independent of adapters to avoid cyclic crate dependencies.
 
 The GUI sends typed commands to domain/service modules and receives events through bounded channels. Domain logic is independent of rendering. Network/storage work must not block the UI thread. The app owns its runtime and cancels workers on exit.
 
@@ -97,16 +140,17 @@ Implementation tasks must verify current official provider documentation. These 
 
 | Stage | Task | Outcome |
 | --- | --- | --- |
-| Foundation | CORE-1 | Workspace preserved; module and storage contracts agreed |
-| Foundation | OPENCAT-1 | Native shell and responsive command/event bridge |
-| Optional account support | CORE-2 | Google OAuth without Drive coupling |
-| Local productivity | CORE-3 A, CORE-4, OPENCAT-2 | Durable tasks, timer, tracking, rewards, and views |
-| Connected tasks | CORE-3 B | Linear auth, mapping, and reliable sync |
-| Desktop companion | OPENCAT-3 | Animated cat, skins, and three modes |
-| Core release | OPENCAT-4 A | Reliability, accessibility, packaging, and footprint verified |
-| Later music | OPENCAT-4 B | YouTube Music feasibility first, then Spotify; supported native implementation |
+| Foundation | CORE-1, OPENCAT-1 | Minimal storage contracts and native shell |
+| Alongside relevant features | CORE-2 | Retained Google OAuth, ready for music's validated auth needs |
+| 1. Pomodoro | CORE-4 A, OPENCAT-2 A | Working timer and native controls |
+| 2. Tasks with Linear | CORE-3 A/B, OPENCAT-2 B | Task model, Linear auth/sync, native task workflow |
+| 3. Optional simple to-do | CORE-3 C, OPENCAT-2 C | Small local-only list, built or adapted; may be skipped |
+| 4. YouTube Music | OPENCAT-4 A | Validate and implement supported native music scope |
+| 5. First extras | CORE-4 B, OPENCAT-3 A | Tracking, initial rewards, animated cat, and presentable companion UI |
+| 6. Spotify | OPENCAT-4 B | Second provider after the first extras |
+| 7. Remaining extras | OPENCAT-3 B, OPENCAT-4 C | Remaining modes, skins, polish, and possible new features |
 
-Local productivity does not depend on provider login. Linear depends on local tasks, not Google auth. Music waits until the timer and Linear work. The eight existing task IDs remain; previous scope and completion assumptions are superseded.
+Pomodoro does not depend on tasks or provider login. Linear needs the task model and persistence, not a separate polished to-do app or Google auth. The optional to-do stage is intentionally small and skippable. YouTube Music follows this core workflow, without waiting for rewards, animation, all window modes, or final release. Spotify follows the first extras, not their completion. Reliability and footprint checks apply throughout. The eight task IDs remain; milestone labels define sequencing rather than numeric task order.
 
 ## 6. Release acceptance
 

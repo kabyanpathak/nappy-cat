@@ -1,4 +1,4 @@
-# CORE-3: Local Tasks and Optional Linear Integration
+# CORE-3: Tasks with Linear and Optional Simple To-Do
 
 **Component:** Task, Linear auth, and Linear sync modules in `crates/cat-core`
 
@@ -6,13 +6,13 @@
 
 **Status:** Planned
 
-**Dependencies:** CORE-1; milestone B follows milestone A, without depending on Google auth
+**Dependencies:** CORE-1 and the initial Pomodoro milestone (CORE-4 A / OPENCAT-2 A); B follows A, without depending on Google auth
 
 ## Goal
 
-Provide durable local tasks first, then let users connect Linear and create/update linked issues from Nappy Cat. This replaces the Drive SDK task.
+After Pomodoro, deliver tasks with Linear. Build the minimal local task model and persistence needed for sync, then the connected workflow. A separate simple local-only to-do experience is optional afterward and must stay small enough not to delay YouTube Music. This replaces the Drive SDK task.
 
-## Milestone A: Local tasks
+## Milestone A: Minimal task model and persistence
 
 - [ ] Support create, read, edit, complete/reopen, and delete with stable local IDs.
 - [ ] Persist changes through the local store, recover interrupted writes, and retain tasks across restart.
@@ -29,6 +29,12 @@ Provide durable local tasks first, then let users connect Linear and create/upda
 - [ ] Reconcile ambiguous remote-create outcomes before retrying; prevent duplicate issue creation.
 - [ ] Detect concurrent edits and provide conflict resolution. Local deletion unlinks by default; remote deletion is outside initial scope.
 - [ ] On disconnect, stop sync and preserve local tasks; handle account changes without sending queued work to the wrong destination.
+
+## Milestone C: Optional quick local to-do
+
+- [ ] Decide whether the existing task controls already cover a simple local-only list; skip this milestone if they do.
+- [ ] If useful, add a minimal local create/edit/complete/delete experience, either directly or by adapting a small Rust project.
+- [ ] Before importing code, check licensing, maintenance, dependencies, and native-only/footprint compatibility. Reuse the existing task model and storage.
 
 ## Acceptance
 

@@ -25,4 +25,4 @@ Keep optional Google sign-in while removing Google Drive from the product requir
 
 Validate successful login, rejected state, cancellation, timeout, refresh failure, and restart/disconnect behavior. No persistent listener or embedded browser remains after login. A distributed app must not rely on keeping an embedded client secret confidential.
 
-Google authentication does not imply YouTube Music or Gmail access. Additional permissions and provider capabilities are separate later work. Linear uses its own auth boundary under CORE-3.
+Google authentication does not imply YouTube Music or Gmail access. Validate music-specific permissions and capabilities in OPENCAT-4 A, before the first cat/extras stage. Linear uses its own auth boundary under CORE-3.

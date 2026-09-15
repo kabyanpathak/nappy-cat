@@ -14,13 +14,13 @@ Establish the native Rust app using the existing egui/eframe direction. Keep the
 
 ## Milestones
 
-- [ ] Create the native application state and shell with task, timer, progress, and connection entry points.
+- [ ] Create a minimal native shell for Pomodoro first; add task, connection, and music controls in roadmap order, then progress and companion views.
 - [ ] Define typed commands/events between GUI and domain/service modules.
 - [ ] Move network and storage work off the UI thread using an app-owned runtime and bounded channels.
 - [ ] Wake the UI for events and timer/animation deadlines; avoid continuous high-frame-rate rendering while idle.
 - [ ] Surface loading, account, offline, and error states without interrupting local tools.
 - [ ] Define worker cancellation, persistence flush, and clean shutdown.
-- [ ] Keep all window modes attached to one application state, ready for OPENCAT-3.
+- [ ] Keep state independent of the initial window so OPENCAT-3 can add modes later; do not implement every mode before music.
 
 ## Acceptance
 
