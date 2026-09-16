@@ -1,75 +1,120 @@
 # Nappy Cat
 
-> Your all-in-one productivity game: a small native desktop companion, built in Rust.
+> A small native desktop companion for focused work, built in Rust.
 
-Nappy Cat combines a Pomodoro timer, daily app-time tracking, a task list, and an animated cat. Focus, finish tasks, and unlock cosmetic rewards such as cat skins. Keep the cat beside your work, open a compact popup, or switch to full screen.
+Nappy Cat brings a Pomodoro timer, Linear tasks, music, and an animated cat into one quiet desktop app. Finish focus sessions, see your daily progress, and unlock cosmetic rewards. Keep the cat beside your work, open compact controls, or use an expanded full-screen view.
 
-The philosophy stays simple: minimal UI, a small footprint, and quiet background operation. All application code is Rust, with a native GUI, no embedded browser or web frontend, and browser use only for authentication. The finalized app targets **less than 100 MB of runtime memory**; package size and CPU usage will also be measured. This is a target, not a verified result.
+This is also a project for growing as an engineer. The developer owns the design, implementation, debugging, and tradeoffs. The backlog supplies clear problems, expected behavior, and documentation to investigate; it leaves room to discover the solution.
 
-## Product features
+## Project goals
 
-- Pomodoro focus and break sessions with pause, resume, and reset.
-- Local tasks that work without an account or internet connection.
-- Daily time spent running Nappy Cat, with focus time shown separately.
-- An animated cat with cosmetic unlocks.
-- Always-on-top cat, compact popup, and full-screen modes sharing one app state.
-- Optional Google OAuth 2.0 sign-in, retained from the original direction.
-- Optional Linear connection: view linked tasks and create or update them from Nappy Cat.
+- **Useful focus tools:** a dependable Pomodoro timer, a native Linear workflow, and music where provider capabilities permit it.
+- **A companion with progression:** a small animated cat, daily progress, and cosmetic unlocks that encourage use without restricting the productivity tools.
+- **A small, quiet app:** restrained background work and a finalized runtime-memory target of **less than 100 MB**. This interpretation is inherited from earlier planning and is **unverified**. Package size and CPU usage are measured separately.
+- **Rust and native UI:** 100% Rust application code, following the existing egui/eframe direction. Ordinary use stays in the native app; the system browser is used only for authentication. No embedded web frontend or persistent local web server.
+- **Local ownership:** local tasks, focus sessions, settings, totals, and rewards remain available without an account. Connections add capabilities without making local work depend on a provider.
+- **Learning through implementation:** tasks describe outcomes and constraints, while the developer chooses the code and solves the problems that arise.
 
-Music is a high-priority productivity feature. Build Pomodoro first, then tasks with Linear, optionally a quick standalone local to-do list, then YouTube Music. Add a substantial first pass of cat features and other extras before Spotify, once the app is more presentable; finish the remaining extras afterward. Native playback capabilities and account requirements must be validated before promising either integration; Google sign-in alone does not establish music access. Gmail and other integrations are later possibilities.
+## Intended experience
 
-Google Drive is no longer the storage backend. The file vault, Drive database, warehouse, Git hosting, quotas, and sharing-key projects are retired from the roadmap. Tasks, sessions, settings, and rewards will be stored locally.
+### Focus first
 
-## Current implementation and structure
+Configure focus and break durations, then start, pause, resume, or reset a session. See the current state and next action clearly. Completed and interrupted sessions remain distinguishable, and sleep or restart must not silently award focus time. Completion notifications and sounds are optional.
 
-The repository contains a Cargo workspace, an early Google OAuth scaffold, and an `open-cat` binary that currently prints “Hello, world!”. The productivity features and GUI are planned; authentication still needs completion and verification.
+### Tasks with Linear
 
-The product name is **Nappy Cat**. Existing package names, task IDs, and directories remain unchanged during this documentation transition.
+After Pomodoro, bring linked Linear issues into the app. Choose a destination workspace/team, explicitly link or publish a task, and edit supported fields through native controls. Show sync progress, failures, and conflicts so that remote changes are understandable. Cached and local work remain accessible during outages.
+
+A separate simple local-only to-do view is optional. Add it only if the main task workflow does not already meet that need, and keep it small enough to preserve the music priority.
+
+### Music, then the first companion features
+
+YouTube Music is the first music priority after the core workflow. A substantial first pass of tracking, rewards, animation, and companion windows follows it. Spotify comes after that first pass; the remaining extras follow Spotify.
+
+Each music provider needs a feasibility decision based on its current official capabilities, account requirements, and compatibility with the native-app constraints. Direct playback and remote control are different outcomes. Google sign-in alone does not establish YouTube Music access. An unsupported implementation remains blocked until the project owner decides how to proceed; research alone does not count as delivering music. See the [provider references](docs/LEARNING_RESOURCES.md).
+
+### Daily progress and a desktop cat
+
+Show app-use time and focus time separately. Initially, app-use time means time Nappy Cat runs while the device is awake, including background use; it does not mean monitoring other applications. Exclude system sleep and explicit tracking pauses.
+
+Earn cosmetic unlocks from recorded usage and completed focus sessions. Keep rewards offline, award milestones once, and let users select unlocked skins. The timer and tasks never depend on earning a reward.
+
+The intended window modes share one app state:
+
+| Mode | Purpose |
+| --- | --- |
+| Companion | A small movable, optionally always-on-top cat with quick access to controls |
+| Compact popup | Timer, task, music, and progress controls close to the current work |
+| Full screen | Expanded tasks, history, rewards, and settings |
+
+Switching views must preserve sessions, edits, playback state, and accounting. Reduced motion, keyboard use, readable controls, and recovery of hidden or off-screen windows are part of the intended experience.
+
+## Build order
+
+| Stage | Usable outcome |
+| --- | --- |
+| Foundation | A verified development baseline, minimal local persistence, and a responsive native shell |
+| 1. Pomodoro | A reliable timer with native controls and session recovery |
+| 2. Tasks with Linear | Local task data plus explicit linking, editing, and recoverable sync |
+| 3. Optional simple to-do | A small local-only view, if the existing task controls need it |
+| 4. YouTube Music | The verified supported native integration, subject to feasibility |
+| 5. First extras | Daily tracking, initial rewards, animated cat, companion, and compact controls |
+| 6. Spotify | The verified second-provider integration and provider selection |
+| 7. Remaining extras and release | Remaining window modes, cosmetics, accessibility, packaging, and final quality checks |
+
+Google authentication is a separate workstream and is completed when relevant; it is not a prerequisite for Pomodoro or Linear. Reliability and resource measurements accompany feature work. Music does not wait for a finished game or final packaging. Changing product constraints or bypassing a blocked provider stage requires an explicit project-owner decision.
+
+Start with the [task index](tasks/README.md), which contains the assignments, dependencies, and migration from the previous broad task files. The [product specification](docs/PRODUCT_SPEC.md) records shared behavior and constraints. The [learning resources](docs/LEARNING_RESOURCES.md) collect documentation and selected projects to study.
+
+## How to use the tasks
+
+Choose a task whose prerequisites are met. Read its goal and acceptance criteria, explore the linked documentation, and decide how to approach the problem. Break it down further if that helps your own workflow. Keep useful design decisions and verification evidence with the task, and mark it complete when the observable outcome is demonstrated.
+
+The assignments intentionally leave implementation choices open. They do not prescribe structs, function signatures, exact algorithms, or a sequence of code edits. References are starting points for research, not code to copy automatically. Check compatibility and licensing before adapting another project.
+
+AI assistance should support planning, explanation, documentation discovery, and review. Application implementation or full solution snippets are provided only when the developer explicitly asks. Updating this plan does not authorize implementing its tickets.
+
+## Future structure goal
+
+The goal is one desktop application with clear responsibilities. The following is a possible destination as the project grows, **not a scaffolding checklist** or a claim that these crates already exist. Start with useful boundaries; decide when a module deserves its own crate as implementation reveals the tradeoffs.
 
 ```text
 nappy-cat/
-├── Cargo.toml
-├── Cargo.lock
-├── crates/
-│   └── cat-core/          # Existing library; future domain and service modules
 ├── apps/
-│   └── open-cat/          # Existing binary; future Nappy Cat native app
-├── tasks/
-│   ├── cat-core/          # CORE-1 through CORE-4
-│   └── open-cat/          # OPENCAT-1 through OPENCAT-4
-├── CAT_ECOSYSTEM_MASTER_SPEC.md
-└── README.md
+│   └── nappy-cat/          # Native application entry point and composition
+├── crates/
+│   ├── cat-core/          # Shared foundation; retain this name
+│   ├── cat-pomodoro/      # Focus/break behavior and session records
+│   ├── cat-tasks/         # Local task behavior and data
+│   ├── cat-linear-auth/   # Linear account lifecycle
+│   ├── cat-linear/        # Linked issues and synchronization
+│   ├── cat-google-auth/   # Optional Google account lifecycle
+│   ├── cat-music/         # Shared music behavior and provider integrations
+│   ├── cat-progress/      # Daily tracking and cosmetic rewards
+│   ├── cat-pet/           # Cat states, skins, and animation
+│   └── cat-gui/           # Native views and all window modes
+├── docs/                  # Product decisions and learning references
+└── tasks/                 # Assignments and roadmap
 ```
 
-Start with modules in these crates, then extract libraries as features grow. Planned boundaries cover Google auth, Linear auth, Linear sync, local tasks, Pomodoro, tracking and rewards, cat animation, GUI, and music. Keep all window modes in one GUI boundary and music providers in one music boundary initially. These are future design boundaries, not new workspace members.
+Keep music providers together initially, tracking and rewards together, and all window modes within one GUI boundary. These are in-process responsibilities, not a suite of separate products. Keep domain behavior independent of rendering and avoid dependencies that create cycles. The eventual module-versus-crate decisions belong to the developer.
 
-## Future file structure goal
+## Development status and commands
 
-The [future workspace tree](CAT_ECOSYSTEM_MASTER_SPEC.md#future-file-structure-goal) shows the intended service crates, shared GUI modes, and music provider modules. Extract these gradually as features grow; the current two-crate structure stays in place for now.
+The implementation is at scaffold stage: a Cargo workspace, the `cat-core` library with an unfinished Google OAuth experiment, and a `nappy-cat` binary whose source currently prints “Hello, world!”. The native GUI and product features remain planned. Working authentication, provider feasibility, and performance remain unverified.
 
-## Roadmap
-
-| Stage | Work | Tasks |
-| --- | --- | --- |
-| Foundation | Preserve workspace, define minimal storage, build native shell; retain Google auth work alongside relevant features | [CORE-1](tasks/cat-core/CORE-1.md), [OPENCAT-1](tasks/open-cat/OPENCAT-1.md), [CORE-2](tasks/cat-core/CORE-2.md) |
-| 1. Pomodoro | Working timer and minimal native controls | [CORE-4 A](tasks/cat-core/CORE-4.md), [OPENCAT-2 A](tasks/open-cat/OPENCAT-2.md) |
-| 2. Tasks with Linear | Task model, Linear auth/sync, and native task controls | [CORE-3 A/B](tasks/cat-core/CORE-3.md), [OPENCAT-2 B](tasks/open-cat/OPENCAT-2.md) |
-| 3. Optional simple to-do | Small local-only list, built directly or adapted from a suitable Rust project; skip if unnecessary | [CORE-3 C](tasks/cat-core/CORE-3.md), [OPENCAT-2 C](tasks/open-cat/OPENCAT-2.md) |
-| 4. YouTube Music | Validate and implement supported native music functionality | [OPENCAT-4 A](tasks/open-cat/OPENCAT-4.md) |
-| 5. First extras | Daily tracking, initial rewards, animated cat, and a presentable companion UI | [CORE-4 B](tasks/cat-core/CORE-4.md), [OPENCAT-3 A](tasks/open-cat/OPENCAT-3.md) |
-| 6. Spotify | Add the second music provider once the app is more presentable | [OPENCAT-4 B](tasks/open-cat/OPENCAT-4.md) |
-| 7. Remaining extras | Finish window modes, skins, polish, and consider further features | [OPENCAT-3 B](tasks/open-cat/OPENCAT-3.md), [OPENCAT-4 C](tasks/open-cat/OPENCAT-4.md) |
-
-Reliability and footprint checks run throughout; a finished game or final release is not a prerequisite for YouTube Music.
-
-The [master specification](CAT_ECOSYSTEM_MASTER_SPEC.md) defines behavior, architecture, and release criteria. Existing task IDs now describe the new product; their old Drive-related scope is superseded.
-
-## Development commands
+With a Rust toolchain that supports the workspace's Rust 2024 edition and declared dependencies:
 
 ```bash
 cargo check --workspace
 cargo test --workspace
-cargo run --bin open-cat
+cargo run --bin nappy-cat
 ```
 
-These commands target the existing packages. Running the binary does not yet launch a GUI. The OAuth scaffold is unfinished; this documentation update does not establish a passing build.
+Cargo metadata validates the renamed package and workspace. An offline workspace check on September 16, 2026 reached the existing OAuth scaffold and failed with four error-type mismatches in `crates/cat-core/src/auth.rs`; resolving these remains developer work in CORE-1/CORE-2. No Rust source was changed during planning.
+
+These commands target the renamed app package. Existing scaffold problems need to be resolved before they succeed; running the app does not yet launch the planned GUI. `cat-core` keeps its existing package name.
+
+## Scope boundaries
+
+The former Google Drive suite is retired. File vaults, Drive-backed databases, warehouses, Git hosting, quotas, and sharing-key projects are outside this roadmap. Google Drive is not the storage backend. Gmail and additional integrations remain future ideas, and should receive an explicit priority decision before new implementation tasks are added.

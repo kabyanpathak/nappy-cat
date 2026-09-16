@@ -1,32 +1,33 @@
-# CORE-4: Pomodoro, Daily Tracking, and Rewards
+# CORE-4: Build reliable Pomodoro sessions
 
-**Component:** Pomodoro and progress modules in `crates/cat-core`
+**Type:** Task
 
-**Priority:** Pomodoro first; full tracking and rewards after YouTube Music
+**Stage:** 1. Pomodoro
+
+**Priority:** High
 
 **Status:** Planned
 
-**Dependencies:** CORE-1 local storage and instance-ownership contracts
+**Dependencies:** [CORE-1](../cat-core/CORE-1.md)
 
 ## Goal
 
-Build focus sessions and local progression for the productivity game. This replaces the vault quota engine.
+Create a focus/break timer whose behavior remains correct independently of rendering speed. Keep this first useful feature small.
 
-## Milestone A: Pomodoro first
+## Acceptance criteria
 
-- [ ] Implement configurable focus/break durations and start, pause, resume, reset, and completion transitions using elapsed time, independent of rendering.
-- [ ] Record completed and interrupted sessions distinctly and publish events for UI, cat state, and optional notifications.
-## Milestone B: Tracking and initial rewards, after OPENCAT-4 A
+- [ ] Configurable focus and break sessions support start, pause, resume, reset, and completion with an unambiguous next state.
+- [ ] Completed, interrupted, and abandoned sessions are distinguishable; completion is not recorded twice.
+- [ ] Pauses, sleep/wake, clock changes, and restart have documented behavior that does not silently grant focus time.
+- [ ] Behavior can be verified without waiting through real-length focus sessions; settings and records can be retained through CORE-5 when integrated.
 
-- [ ] Track app-use time while Nappy Cat runs on an awake device, including background mode; exclude sleep and explicit tracking pauses. Do not monitor other apps.
-- [ ] Track focus time separately, excluding breaks and paused sessions.
-- [ ] Persist bounded checkpoints and local-date totals; split at midnight and handle clock/timezone changes.
-- [ ] Define sleep/wake and restart recovery so closed or suspended intervals do not silently become focus time or earned usage.
-- [ ] Prevent duplicate accounting across windows/processes.
-- [ ] Define tunable usage/session milestones, persist cosmetic unlocks once, and expose skin selection without gating productivity tools.
+## Documentation and learning
 
-## Acceptance
+- [Rust time concepts](https://doc.rust-lang.org/std/time/index.html)
+- [Testing with Tokio](https://tokio.rs/tokio/topics/testing)
 
-Accept milestone A independently with controllable-time tests for timer transitions, pause/resume, sleep, and restart. It does not depend on daily tracking, rewards, or tasks. For milestone B, also verify midnight, clock changes, and duplicate completion events. Daily totals and rewards survive restart without double counting. Core behavior works offline with no provider account.
+## Design question
 
-Keep Pomodoro separate from progress rules; combine tracking and rewards in the future `cat-progress` boundary. Rendering and animation belong to OPENCAT-3.
+Which time should count as focused work when a device sleeps or the application closes?
+
+[Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)

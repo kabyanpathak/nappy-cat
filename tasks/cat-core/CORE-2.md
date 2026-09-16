@@ -1,28 +1,33 @@
-# CORE-2: Retain and Complete Google OAuth 2.0
+# CORE-2: Complete optional Google sign-in
 
-**Component:** Google auth module in `crates/cat-core`; future `cat-google-auth` boundary
+**Type:** Task
 
-**Priority:** High, independent of local productivity
+**Stage:** Alongside relevant features
 
-**Status:** Early scaffold exists; working authentication not verified
+**Priority:** High
 
-**Dependencies:** CORE-1 credential/storage contracts
+**Status:** In progress — scaffold exists; working flow unverified
+
+**Dependencies:** [CORE-1](../cat-core/CORE-1.md), [CORE-6](../cat-core/CORE-6.md)
 
 ## Goal
 
-Keep optional Google sign-in while removing Google Drive from the product requirements. Local tasks, timers, and rewards must work signed out. Existing scaffold code is retained during this documentation transition.
+Finish the existing Google authentication work as an optional desktop capability. It must remain independent of Pomodoro, local tasks, and Linear.
 
-## Milestones
+## Acceptance criteria
 
-- [ ] Verify current official Google native-app OAuth requirements and choose minimal scopes for the actual login feature; no Drive scope requirement.
-- [ ] Complete authorization-code flow with PKCE and state validation; use provider endpoints and registered client configuration.
-- [ ] Open the system browser for authentication and receive the callback through a temporary loopback listener.
-- [ ] Handle malformed callbacks, denial, cancellation, timeout, and concurrent login attempts; close the listener on every terminal path.
-- [ ] Store credentials securely, preferably in OS credential storage; support expiry, refresh, revoked access, and disconnect.
-- [ ] Expose account state and actionable errors to the GUI without logging tokens or blocking rendering.
+- [ ] A user can authenticate through the system browser and return to the native app using the current supported installed-app flow.
+- [ ] PKCE and state validation protect the login. Denial, malformed callbacks, cancellation, timeout, and overlapping attempts have clear outcomes.
+- [ ] Any temporary callback listener closes on every terminal path; no persistent auth server or embedded browser is required.
+- [ ] Minimal scopes match a documented feature, credentials follow CORE-6, and sign-out preserves local work. Drive access and music playback are not implied.
 
-## Acceptance
+## Documentation and learning
 
-Validate successful login, rejected state, cancellation, timeout, refresh failure, and restart/disconnect behavior. No persistent listener or embedded browser remains after login. A distributed app must not rely on keeping an embedded client secret confidential.
+- [Google OAuth for installed apps](https://developers.google.com/identity/protocols/oauth2/native-app)
+- [oauth2 5.0.0 documentation](https://docs.rs/oauth2/5.0.0/oauth2/)
 
-Google authentication does not imply YouTube Music or Gmail access. Validate music-specific permissions and capabilities in OPENCAT-4 A, before the first cat/extras stage. Linear uses its own auth boundary under CORE-3.
+## Design question
+
+What does successful Google authentication actually authorize in this product?
+
+[Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)
