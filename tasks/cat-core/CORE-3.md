@@ -1,15 +1,34 @@
-# CORE-3: Drive REST API SDK & Domain Models
+# CORE-3: Provide durable local task behavior
 
-**Epic**: `CAT-CORE-EPIC`
-**Component**: `cat-core` (Network SDK)
-**Priority**: High
+**Type:** Task
 
-## Description
-Encapsulate all Google Drive HTTP requests into a reusable `DriveClient` struct inside `cat-core`. This includes file listing, uploading, and the temp-buffering download logic.
+**Stage:** 2. Tasks with Linear
 
-## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] 1. In `client.rs`, define `pub struct DriveClient { http: reqwest::Client, auth: TokenStore }`.
-*   [ ] 2. Define data models like `pub struct DriveFile { id, name, size, mime_type }` mapped via `serde`.
-*   [ ] 3. Implement `pub async fn list_files(&self, folder_id: &str) -> Vec<DriveFile>`.
-*   [ ] 4. Implement `pub async fn upload_file(&self, path: &PathBuf) -> Result<(), Error>`.
-*   [ ] 5. Implement `pub async fn buffer_to_temp(&self, file: &DriveFile) -> PathBuf` that downloads the file to `std::env::temp_dir()`.
+**Priority:** High
+
+**Status:** Planned
+
+**Dependencies:** [CORE-5](../cat-core/CORE-5.md), [APP-3](../nappy-cat/APP-3.md)
+
+## Goal
+
+Give the Linear workflow a small local task foundation that continues to work without a provider account. This is the shared behavior, not a separate polished to-do application.
+
+## Acceptance criteria
+
+- [ ] Tasks can be created, read, edited, completed, reopened, and deleted with stable identity.
+- [ ] Tasks survive restart and failed saves do not appear as successful changes.
+- [ ] Local tasks and provider links remain distinguishable; deleting a local task does not silently delete a remote issue.
+- [ ] The behavior is usable independently of GUI rendering and remains available offline.
+
+## Documentation and learning
+
+- [The Rust Programming Language](https://doc.rust-lang.org/book/)
+- [Serde documentation](https://serde.rs/)
+- [Testing in Rust](https://doc.rust-lang.org/book/ch11-00-testing.html)
+
+## Design question
+
+How will you distinguish a local task from its optional relationship to a provider?
+
+[Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)

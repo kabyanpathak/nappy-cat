@@ -1,8 +1,6 @@
-[package]
-name = "nappy-cat"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-tokio = { version = "1.53.1", features = ["macros", "rt-multi-thread"] }
-
+[workspace]
+resolver = "2"
+members = [
+    "crates/cat-core",
+    "apps/nappy-cat",
+]

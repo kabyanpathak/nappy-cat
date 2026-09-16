@@ -1,16 +1,37 @@
-# CORE-1: Workspace Initialization & Core Scaffolding
+# CORE-1: Establish the development baseline
 
-**Epic**: `CAT-CORE-EPIC`
-**Component**: `cat-core`
-**Priority**: Blocker
+**Type:** Task
 
-## Description
-Set up the Cargo workspace and scaffold the `cat-core` library. This library will act as the "SDK" for the entire Cat Ecosystem, containing all the shared structs, constants, and foundational tools.
+**Stage:** Foundation
 
-## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] 1. Create a `crates/cat-core` folder and an `apps/open-cat` folder.
-*   [ ] 2. Inside `cat-core`, create a `src` folder and an empty `lib.rs`.
-*   [ ] 3. Create the root `Cargo.toml`. Add `[workspace]` and `members = ["crates/cat-core", "apps/open-cat"]`.
-*   [ ] 4. In the root `Cargo.toml`, add `[workspace.dependencies]` defining `tokio`, `serde`, and `reqwest`.
-*   [ ] 5. In `cat-core/Cargo.toml`, add `tokio = { workspace = true }`, etc.
-*   [ ] 6. Run `cargo check --workspace`.
+**Priority:** High
+
+**Status:** Partially established — workspace exists; baseline fixes and decisions pending
+
+**Dependencies:** None
+
+## Goal
+
+Understand the existing workspace and make it a dependable starting point for your own feature work. Preserve cat-core and the Nappy Cat app identity.
+
+## Acceptance criteria
+
+- [ ] Record the current build/test results, resolve the unfinished scaffold issues needed for a usable baseline, and distinguish existing work from completed features.
+- [ ] Choose the first supported desktop platform and describe how additional platforms will be evaluated.
+- [ ] Describe the responsibilities of the app and shared library, plus the local-data and background-operation expectations, without designing every future feature.
+- [ ] Document the Rust toolchain and repeatable local verification commands. The existing two-package workspace is retained and cat-core remains independent of GUI rendering.
+
+## Observed starting point
+
+On September 16, 2026, workspace metadata passed after the app rename. An offline workspace check reached the existing `cat-core` OAuth scaffold and reported four error-type mismatches. The Rust source was left unchanged; resolving the baseline remains part of your implementation work.
+
+## Documentation and learning
+
+- [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
+- [The Rust Programming Language](https://doc.rust-lang.org/book/)
+
+## Design question
+
+What belongs in a reusable library, and what should remain an application decision?
+
+[Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)

@@ -1,16 +1,33 @@
-# CORE-2: OAuth 2.0 PKCE & Ephemeral Listener
+# CORE-2: Complete optional Google sign-in
 
-**Epic**: `CAT-CORE-EPIC`
-**Component**: `cat-core` (Auth)
-**Priority**: High
+**Type:** Task
 
-## Description
-Build the OAuth 2.0 authentication engine entirely inside `cat-core`. It should use an ephemeral TCP listener (port 0) and handle the entire Google token exchange, returning a reusable Token struct.
+**Stage:** Alongside relevant features
 
-## 🧗‍♀️ Step-by-Step Developer Checklist
-*   [ ] 1. In `crates/cat-core/src/auth.rs`, define `pub struct TokenStore { access_token, refresh_token, expires_at }`.
-*   [ ] 2. Write `pub fn generate_pkce()` using the `sha2` crate to hash a random string.
-*   [ ] 3. Write an async function `pub async fn authenticate() -> Result<TokenStore, AuthError>`.
-*   [ ] 4. Inside `authenticate()`, bind `std::net::TcpListener::bind("127.0.0.1:0")` to get a dynamic port.
-*   [ ] 5. Use the `open` crate to launch the browser.
-*   [ ] 6. Catch the callback, exchange the code via `reqwest`, save `token.json`, and return the `TokenStore` struct.
+**Priority:** High
+
+**Status:** In progress — scaffold exists; working flow unverified
+
+**Dependencies:** [CORE-1](../cat-core/CORE-1.md), [CORE-6](../cat-core/CORE-6.md)
+
+## Goal
+
+Finish the existing Google authentication work as an optional desktop capability. It must remain independent of Pomodoro, local tasks, and Linear.
+
+## Acceptance criteria
+
+- [ ] A user can authenticate through the system browser and return to the native app using the current supported installed-app flow.
+- [ ] PKCE and state validation protect the login. Denial, malformed callbacks, cancellation, timeout, and overlapping attempts have clear outcomes.
+- [ ] Any temporary callback listener closes on every terminal path; no persistent auth server or embedded browser is required.
+- [ ] Minimal scopes match a documented feature, credentials follow CORE-6, and sign-out preserves local work. Drive access and music playback are not implied.
+
+## Documentation and learning
+
+- [Google OAuth for installed apps](https://developers.google.com/identity/protocols/oauth2/native-app)
+- [oauth2 5.0.0 documentation](https://docs.rs/oauth2/5.0.0/oauth2/)
+
+## Design question
+
+What does successful Google authentication actually authorize in this product?
+
+[Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)
