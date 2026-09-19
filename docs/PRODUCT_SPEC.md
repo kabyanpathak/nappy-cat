@@ -1,6 +1,6 @@
 # Nappy Cat product specification
 
-Nappy Cat is one native Rust desktop app that combines focus tools, tasks, supported music integrations, and a small cat companion. This document records product behavior and shared constraints; the [task index](../tasks/README.md) defines independently completable assignments, and the [learning resources](LEARNING_RESOURCES.md) provide research starting points.
+Nappy Cat is one Rust productivity system with shared functionality exposed first through commands, then a TUI, and later a native GUI. It combines focus tools, Linear tasks, YouTube Music and Spotify, calendar, habits, and later tracking and a cat companion. This document records product behavior and shared constraints; the [task index](../tasks/README.md) defines independently completable assignments, and the [learning resources](LEARNING_RESOURCES.md) provide research starting points.
 
 Features are planned unless implementation evidence shows otherwise. The current app is a console placeholder and the existing Google OAuth code is unfinished. This specification establishes no passing build, supported provider capability, or measured performance result.
 
@@ -12,8 +12,8 @@ Planning, explanation, documentation research, and review are welcome. Applicati
 
 ## Product constraints
 
-- **One native app:** 100% Rust application code, following the existing egui/eframe direction. No embedded web frontend or persistent local web server. The system browser is used only for authentication; normal task editing, music controls, and settings stay native.
-- **Local first:** local tasks, sessions, settings, totals, and unlocks are usable offline and signed out. Provider failures do not stop the timer or erase local work.
+- **One product, two frontends:** 100% Rust application code. Minimal command access comes first, followed by full TUI integration and a later GUI using the existing egui/eframe direction. Share behavior and data. No embedded web frontend or persistent local web server; the system browser is used only for authentication.
+- **Local first:** local tasks, sessions, calendar events, habits, settings, totals, and unlocks are usable offline and signed out. Provider failures do not stop the timer or erase local work.
 - **Small and quiet:** finalized runtime memory targets less than 100 MB. This interpretation is inherited from earlier planning and remains unverified. Measure package size and CPU separately, including idle/background behavior.
 - **Optional accounts:** Google and Linear have independent account lifecycles. Neither account is required for the local productivity features.
 - **Owner-directed scope:** unsupported integrations are visible blockers. Changing the constraints or bypassing a blocked stage requires an explicit project-owner decision.
@@ -22,24 +22,29 @@ The old Drive suite is retired: no file vault, Drive storage backend, warehouse,
 
 ## Delivery sequence
 
-| Stage | Required outcome |
+| Stage | Usable outcome |
 | --- | --- |
-| Foundation | Development baseline, minimal persistence, and responsive native shell |
-| Pomodoro | Usable focus/break timer and native controls |
-| Linear tasks | Local task model, account connection, linked issues, and recoverable sync |
-| Optional simple to-do | A small local-only view only if it adds value |
-| YouTube Music | A verified, supported native music experience |
-| First extras | Tracking, initial rewards, animated cat, companion, and compact controls |
-| Spotify | A verified second provider after the first extras are usable |
-| Remaining extras and release | Full-screen mode, remaining polish, and release acceptance |
+| Foundation | Build baseline, minimal persistence, command entry point, and clear runtime ownership |
+| 1. Pomodoro | Reliable presets and focus/break behavior, commands, and a small terminal status display |
+| 2. Tasks with Linear | Local tasks plus explicit linking, editing, and recoverable sync through minimal commands/prompts |
+| 3. Optional simple to-do | A bounded local-only convenience if existing task commands need it |
+| 4. YouTube Music | First accepted supported music integration, usable through minimal controls |
+| 5a. Calendar | Local events, agenda, and scheduled task blocks after YouTube Music |
+| 5b. Habits | Recurring habits and occurrence completion directly in the calendar |
+| 6. Spotify | Second accepted music integration and provider coexistence |
+| 7. Integrated TUI | Full terminal workflows for delivered features, then an installable developer-facing release |
+| 8. Tracking and GUI | Daily history/analytics, rewards, and a native GUI for broader audiences; keep the TUI supported |
+| 9. GUI polish and release | Companion/window modes, cosmetics, accessibility, and later GUI packaging |
 
-Pomodoro does not depend on tasks or login. Linear does not depend on Google authentication or a polished standalone to-do app. YouTube Music does not wait for rewards, animation, every window mode, or release packaging. Spotify follows the first substantial companion pass, not the completion of every extra. Google auth is completed alongside the relevant feature needs. Reliability and footprint checks run throughout.
+The first useful Pomodoro and Linear workflows use minimal commands/prompts and a timer status line or bar. They do not depend on full TUI pages, a graphical shell, tracking, or companion work. Full TUI implementation/integration is scheduled after the Spotify outcome, then packaged in TUI-4. Tracking and the GUI follow, with terminal access retained as new shared features arrive.
 
-A provider feasibility task can finish with an evidence-backed negative result. Its unsupported implementation task remains **Blocked**; it is not completed or silently replaced. The owner then decides whether to revise the constraints, defer the provider, or authorize a different sequence.
+YouTube Music is first; Spotify is second. Calendar follows YouTube Music, and habits follow calendar. Apple Music is explicitly excluded. Google authentication is completed only for relevant feature needs. Reliability and footprint work accompanies every stage.
+
+A provider feasibility ticket may complete with an evidence-backed negative result. The implementation remains Blocked until the owner accepts a compatible scope, deferral, or sequence change. Record the same decision on affected downstream tickets.
 
 ## Focus sessions
 
-Provide configurable focus and break durations, start/pause/resume/reset, completion feedback, and a clear next action. Completed and interrupted sessions remain distinguishable. Session behavior must be independent of frame rate, and paused time must not count toward focus.
+Provide named presets with customizable focus, short-break, long-break durations and cycle length, start/pause/resume/reset, completion feedback, and a clear next action. Define and verify what selecting or editing a preset does to an active session. Early controls are command-based with a minimal terminal status display. Completed and interrupted sessions remain distinguishable. Session behavior must be independent of frame rate, and paused time must not count toward focus.
 
 Sleep, restart, and clock changes must not silently create earned focus time. Recovery should make the resulting session state understandable. Notifications and sounds are optional, configurable, and tolerant of denied system permissions.
 
@@ -69,9 +74,17 @@ Deliver only the capability supported by that decision, with native controls and
 
 A browser player, webview, scraping integration, or external-player dependency is not an automatic fallback. Such a change needs an explicit owner decision. Keep the feasibility evidence and any blocker visible in the task record.
 
+## Calendar and habits
+
+Calendar starts after the accepted YouTube Music outcome. Deliver local event creation/editing/deletion, a date/range agenda, timed and all-day events, and explicit timezone/daylight-saving behavior. Choose a bounded initial recurrence scope. Link task blocks deliberately; rescheduling or deleting a block does not silently alter a Linear issue or award focus completion. External provider synchronization, invitations, and shared calendars remain outside initial scope.
+
+Habits follow calendar and appear in that same agenda. Define a small daily/weekly schedule model, occurrence identity, and complete/undo/skip behavior. Schedule edits and timezone changes must not rewrite historical outcomes unexpectedly or duplicate occurrences. Planned activity, completed habits, completed tasks, and actual focus remain distinguishable. Analytics/streaks/rewards follow in the later tracking stage.
+
+Both features are first usable through commands, then integrated into TUI-3, then APP-13. Minimal occurrence records are required before analytics; a second parallel calendar is not.
+
 ## Daily tracking and rewards
 
-Full daily tracking and rewards begin with the first extras after YouTube Music. Initial Pomodoro work needs only session behavior and records.
+Full daily tracking, analytical history, and rewards begin after the integrated TUI release, alongside the broader-audience GUI. Initial Pomodoro needs session behavior and records; early habits need calendar occurrence records and basic completion only. Tracking reuses those records and remains inspectable in both frontends.
 
 App-use time means time Nappy Cat is running while the device is awake, including background mode. Do not monitor other applications. Exclude system sleep and explicit tracking pauses. Focus time is separate and includes only an active, unpaused focus session.
 
@@ -81,7 +94,7 @@ Cosmetic milestones are tunable. Award each once, preserve unlocks offline, and 
 
 ## Cat, windows, and accessibility
 
-Cat states include idle, focus, break, and celebration. The first extras deliver an initial animated cat, a movable companion with user-controlled always-on-top behavior, and compact access to existing controls. Full-screen mode and expanded cosmetics follow Spotify.
+Cat states include idle, focus, break, and celebration. These belong to the later GUI stage after TUI-4 and APP-13, including a movable companion with user-controlled always-on-top behavior and compact controls. None is a dependency of music or the terminal release.
 
 All modes share one app state. Switching modes must preserve sessions, task edits, music state, totals, and rewards. Provide an obvious way out of full screen and a way to recover hidden or off-screen windows. Verify transparency and special-window support for each supported platform; use a normal compact-window fallback where needed.
 
@@ -89,24 +102,30 @@ Readable text, keyboard operation, understandable status/errors, and reduced mot
 
 ## Local data and lifecycle
 
-Choose a compact local store in an appropriate OS application-data location. Data includes sessions, tasks, settings, totals, unlocks, provider mappings, and pending sync work as each feature arrives. Define durability, versioning, migration, interrupted-write recovery, and understandable failure behavior without making future schemas prerequisites for the first timer.
+Choose a compact local store in an appropriate OS application-data location. Data includes sessions, tasks, calendar events, habit schedules/occurrences, settings, totals, unlocks, provider mappings, and pending sync work as each feature arrives. Define durability, versioning, migration, interrupted-write recovery, and understandable failure behavior without making future schemas prerequisites for the first timer.
 
-One source of ownership must prevent duplicate processes or windows from duplicating sessions, accounting, and writes. Shutdown cancels unnecessary work and preserves completed local changes. Background operation remains part of the app, without a separate always-running service.
+One source of ownership must prevent duplicate processes or windows from duplicating sessions, accounting, and writes. Shutdown cancels unnecessary work and preserves completed local changes. Background operation has an explicit owner and exit behavior. APP-2 decides whether in-process ownership is enough or a shared local runtime/IPC is justified. A permanently running service is not a requirement, and no persistent web server is introduced.
 
 ## Architecture goal
 
-Keep the application entry point at `apps/nappy-cat` and preserve `crates/cat-core`. The [README's future structure](../README.md#future-structure-goal) describes possible boundaries for Pomodoro, tasks, Google auth, Linear auth/sync, music, progress, pet, and GUI.
+Keep the current entry point at `apps/nappy-cat` and preserve `crates/cat-core`. The [README structure goal](../README.md#future-structure-goal) separates shared feature responsibilities from command, TUI, and GUI presentation. Modules are sufficient until a real boundary justifies a crate.
 
-These boundaries can remain modules until the developer decides separate crates are justified. Do not scaffold speculative workspace members. Keep domain behavior independent of rendering; group tracking with rewards, providers within music, and all window modes within GUI initially. This remains one in-process desktop application.
+Both frontends use the same timer, task, provider, calendar, habit, and tracking behavior and data. Neither renderer owns the domain rules. Launching the TUI must not require a GUI or graphical session. Define simultaneous frontend access explicitly, preventing duplicate active sessions, conflicting writes, provider work, and counted time. Detaching an interface and quitting the runtime have distinct documented meanings when background operation is enabled.
+
+The owner cited Codex/Antigravity as inspiration for offering terminal and graphical experiences; no AI assistant, code editor, embedded terminal emulator, or IDE integration is implied. Focusd supplies a visual and behavioral reference, not a mandatory architecture.
 
 ## Release acceptance
+
+TUI-4 is the first developer-facing release and applies these checks to its delivered features. GUI-only, analytics, rewards, and companion checks are added for QUALITY-5, the later GUI release; they do not block terminal packaging.
 
 - Local tools work signed out and offline, retain data across restart, and recover from interrupted operations without silently losing or duplicating work.
 - Focus behavior is verified across pause/resume, sleep/wake, restart, and clock changes. Progress additionally covers midnight, timezone changes, duplicate events, and multiple windows/processes.
 - Linear supports the agreed native workflow with explicit publication, visible synchronization, account separation, and recovery from outages, revoked credentials, ambiguous remote writes, and conflicts.
 - Every shipped music provider has verified capabilities and working native behavior. Blocked provider work stays visible until the owner records a scope or sequencing decision.
+- Calendar and habit records survive restart and recurrence edits, handle timezone/daylight-saving boundaries, and remain consistent in commands, TUI, and GUI.
+- Terminal exit restores the terminal; frontend changes never duplicate runtime ownership or accounting.
 - Window modes share state, recover reliably, and support keyboard access, readable controls, reduced motion, and optional notifications.
-- Measure release-build memory on each supported OS with representative data in idle companion, compact, full-screen, focus, sync, and playback scenarios. Record the method, steady state, peaks, package size, and CPU separately. Include playback workers; do not claim the less-than-100-MB target is met without evidence.
+- Measure release-build memory on each supported OS with representative data in TUI-only, GUI-only, permitted combined use, idle companion, compact, full-screen, focus, sync, and playback scenarios. Record the method, steady state, peaks, package size, and CPU separately. Include playback workers; do not claim the less-than-100-MB target is met without evidence.
 - Verify native startup, clean shutdown, packaging, required asset/dependency notices, and user-facing setup and recovery documentation on the chosen platforms.
 
 Supported platforms, storage technology, reward thresholds, and final module/crate boundaries remain developer decisions. Tasks should make the relevant decisions visible without prescribing their implementation.

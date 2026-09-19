@@ -2,7 +2,7 @@
 
 **Type:** Task
 
-**Stage:** 7. Remaining extras
+**Stage:** 9. GUI polish and release
 
 **Priority:** Normal
 

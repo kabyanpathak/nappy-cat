@@ -2,13 +2,13 @@
 
 **Type:** Task
 
-**Stage:** 5. First extras
+**Stage:** 8. Tracking and GUI
 
 **Priority:** Normal
 
 **Status:** Planned
 
-**Dependencies:** [APP-3](../nappy-cat/APP-3.md), [PROGRESS-2](../progress/PROGRESS-2.md), [PROGRESS-3](../progress/PROGRESS-3.md)
+**Dependencies:** [APP-13](../nappy-cat/APP-13.md), [PROGRESS-2](../progress/PROGRESS-2.md), [PROGRESS-3](../progress/PROGRESS-3.md)
 
 ## Goal
 
@@ -19,11 +19,11 @@ Make today’s use and progress understandable without confusing app-running tim
 - [ ] App-use time and focus time are labelled and displayed separately with meaningful empty and partial-day states.
 - [ ] Users can inspect the planned daily summary, see earned cosmetics, and select available rewards.
 - [ ] Progress updates survive view changes and restart without duplicate awards or misleading totals.
-- [ ] The view remains useful offline and respects tracking preferences.
+- [ ] Equivalent history/progress inspection is available in TUI and GUI as tracking ships; both remain useful offline and respect tracking preferences.
 
 ## Scope and sequencing
 
-Start after the YouTube Music stage outcome is accepted; see the stage gates in ../README.md.
+Start after TUI-4; see the stage gates in the task index.
 
 ## Documentation and learning
 

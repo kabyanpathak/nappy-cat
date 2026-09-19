@@ -16,7 +16,7 @@ Add Spotify within the shared music responsibility while preserving the accepted
 
 ## Acceptance criteria
 
-- [ ] The accepted Spotify capability works with native account state and controls matching the provider’s actual support.
+- [ ] The accepted Spotify capability works with command-accessible account state and controls matching the provider’s actual support.
 - [ ] Connection, refresh, disconnect, invalid accounts/devices, and revoked access have clear behavior independent of Google and Linear.
 - [ ] Failures and rate limits stay bounded without blocking focus or task work.
 - [ ] The app labels unsupported actions accurately and records resource costs for the supported playback/control path.

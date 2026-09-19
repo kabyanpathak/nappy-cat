@@ -19,15 +19,15 @@ Add a very small local-only task experience only if the existing controls do not
 - [ ] Record whether the existing local task controls are sufficient; a documented decision to skip completes this optional ticket.
 - [ ] If needed, provide local create/edit/complete/reopen/delete with offline persistence, using the existing task behavior.
 - [ ] If adapting another Rust project, review its license, dependencies, maintenance, and footprint before importing anything.
-- [ ] The result stays within the native app and does not become a second task system or a large prerequisite for music.
+- [ ] The result stays within the minimal command workflow and does not become a second task system or a large prerequisite for music.
 
 ## Documentation and learning
 
-- [egui documentation](https://docs.rs/egui/latest/egui/)
+- [clap documentation](https://docs.rs/clap/latest/clap/)
 - [Cargo workspaces](https://doc.rust-lang.org/cargo/reference/workspaces.html)
 
 ## Design question
 
-What useful interaction is missing from the existing task view?
+What useful interaction is missing from the existing task commands?
 
 [Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)

@@ -2,5 +2,5 @@
 resolver = "2"
 members = [
     "crates/cat-core",
-    "apps/nappy-cat",
+    "apps/nappy-cat", "crates/pomodoro",
 ]

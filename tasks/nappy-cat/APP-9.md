@@ -2,7 +2,7 @@
 
 **Type:** Task
 
-**Stage:** 5. First extras
+**Stage:** 8. Tracking and GUI
 
 **Priority:** Normal
 
@@ -23,7 +23,7 @@ Let people keep a small cat beside their work and reach useful controls through 
 
 ## Scope and sequencing
 
-This is the first-extras completion point before Spotify, after the accepted YouTube Music outcome.
+This belongs to the later GUI stage after TUI-4 and APP-13; it never blocks Spotify or the terminal release.
 
 ## Documentation and learning
 

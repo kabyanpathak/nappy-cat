@@ -1,10 +1,10 @@
-# APP-3: Deliver the first usable Pomodoro interface
+# APP-3: Expose Pomodoro commands and a minimal status display
 
 **Type:** Task
 
 **Stage:** 1. Pomodoro
 
-**Priority:** High
+**Priority:** Normal
 
 **Status:** Planned
 
@@ -12,22 +12,23 @@
 
 ## Goal
 
-Make the timer useful in everyday work before adding connected tasks or game features.
+Make Pomodoro usable before the complete TUI, with simple commands and at most a small terminal status line or bar.
 
 ## Acceptance criteria
 
-- [ ] The native interface shows current session state, remaining time, duration preferences, and start/pause/resume/reset controls.
-- [ ] Completion and interruption are clear; optional notifications or sounds respect user preferences and denied permissions.
-- [ ] The timer works offline and signed out, persists the relevant settings/session outcome, and handles restart and sleep consistently.
-- [ ] The main workflow is usable with a keyboard. Tasks, rewards, music, and animated cats are not required to finish this ticket.
+- [ ] Users can select/customize presets and start, pause, resume, and reset sessions using the minimal interface.
+- [ ] A compact status display communicates current phase, remaining time, running/paused state, and cycle progress without a full-screen dashboard.
+- [ ] Completion and interruption are clear; optional notifications respect preferences and denied permissions.
+- [ ] The workflow works offline and signed out, retains relevant settings/session outcomes, and has consistent sleep/restart behavior. Full history views and daily tracking come later.
 
 ## Documentation and learning
 
-- [egui documentation](https://docs.rs/egui/latest/egui/)
+- [clap documentation](https://docs.rs/clap/latest/clap/)
 - [Rust time concepts](https://doc.rust-lang.org/std/time/index.html)
+- [Focusd source reference](https://github.com/BibekBhusal0/focusd)
 
 ## Design question
 
-What should the user see immediately after returning from a break or a suspended device?
+Which few pieces of status are enough to use the timer while doing other work?
 
 [Backlog and working rules](../README.md) · [Learning resources](../../docs/LEARNING_RESOURCES.md)

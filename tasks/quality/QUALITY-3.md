@@ -17,7 +17,7 @@ Measure and improve the app’s actual resource use against the less-than-100-MB
 ## Acceptance criteria
 
 - [ ] Define a repeatable measurement method, supported platforms, representative dataset, and treatment of helper processes and transient peaks.
-- [ ] Record release-build idle, focus, sync, playback, and each window-mode memory usage, including steady state and peaks.
+- [ ] Record release-build idle, focus, sync, playback, and TUI-only, GUI-only, permitted combined use, and each window-mode memory usage, including steady state and peaks.
 - [ ] Measure idle CPU, startup behavior, package size, and background/hidden operation separately; build-size flags alone do not demonstrate runtime memory.
 - [ ] Resolve over-budget cases or obtain an explicit product-target revision before claiming compliance. Repeat relevant measurements after expensive feature changes.
 

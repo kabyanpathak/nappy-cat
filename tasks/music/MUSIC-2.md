@@ -12,7 +12,7 @@
 
 ## Goal
 
-Implement only the supported music scope accepted after feasibility research, with a clear native user experience.
+Implement only the supported music scope accepted after feasibility research, through minimal commands first; the full TUI and GUI reuse this capability later.
 
 ## Acceptance criteria
 

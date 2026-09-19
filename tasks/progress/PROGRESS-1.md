@@ -2,13 +2,13 @@
 
 **Type:** Task
 
-**Stage:** 5. First extras
+**Stage:** 8. Tracking and GUI
 
 **Priority:** Normal
 
 **Status:** Planned
 
-**Dependencies:** [APP-2](../nappy-cat/APP-2.md), [CORE-4](../cat-core/CORE-4.md), [CORE-5](../cat-core/CORE-5.md)
+**Dependencies:** [TUI-4](../tui/TUI-4.md), [APP-2](../nappy-cat/APP-2.md), [CORE-4](../cat-core/CORE-4.md), [CORE-5](../cat-core/CORE-5.md)
 
 ## Goal
 
@@ -23,7 +23,7 @@ Measure time Nappy Cat is running while the device is awake, including backgroun
 
 ## Scope and sequencing
 
-Start only after the YouTube Music stage outcome is accepted.
+Start after TUI-4 delivers the terminal release, following the accepted Spotify stage outcome.
 
 ## Documentation and learning
 

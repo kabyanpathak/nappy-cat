@@ -19,7 +19,7 @@ Understand the existing workspace and make it a dependable starting point for yo
 - [ ] Record the current build/test results, resolve the unfinished scaffold issues needed for a usable baseline, and distinguish existing work from completed features.
 - [ ] Choose the first supported desktop platform and describe how additional platforms will be evaluated.
 - [ ] Describe the responsibilities of the app and shared library, plus the local-data and background-operation expectations, without designing every future feature.
-- [ ] Document the Rust toolchain and repeatable local verification commands. The existing two-package workspace is retained and cat-core remains independent of GUI rendering.
+- [ ] Document the Rust toolchain and repeatable local verification commands. The existing two-package workspace is retained and cat-core remains independent of TUI and GUI rendering.
 
 ## Observed starting point
 

@@ -17,8 +17,8 @@ Use the README’s future structure goal to improve maintainability when real fe
 ## Acceptance criteria
 
 - [ ] Identify a concrete coupling, testing, or dependency problem before extracting a crate.
-- [ ] Preserve cat-core, keep the app focused on composition, and keep domain behavior testable without GUI or live provider accounts.
-- [ ] Initially group window modes together, music providers together, and tracking with rewards; document any later reason to separate them.
+- [ ] Preserve cat-core, keep the app focused on composition, and keep domain behavior testable without either frontend or live provider accounts.
+- [ ] Keep TUI and GUI presentation separate from shared domain behavior; initially group GUI window modes together, music providers together, and tracking with rewards; document any later reason to separate them.
 - [ ] After a chosen extraction, workspace builds, behavior, task links, and architecture documentation remain consistent. No empty speculative crates are required.
 
 ## Documentation and learning

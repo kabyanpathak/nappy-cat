@@ -2,7 +2,7 @@
 
 **Type:** Task
 
-**Stage:** 5. First extras
+**Stage:** 8. Tracking and GUI
 
 **Priority:** Normal
 

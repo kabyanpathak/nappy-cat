@@ -18,7 +18,7 @@ Exercise the failures that cross feature boundaries and are easy to miss in isol
 
 - [ ] Test interruption during saves, pending sync, authentication, mode changes, and active sessions without losing committed local work.
 - [ ] Cover sleep/wake, restart, duplicate instances, midnight/timezone changes, expired credentials, conflicts, and provider outages.
-- [ ] Tasks, focus, progression, and accepted music capabilities remain consistent when used together.
+- [ ] Tasks, focus, calendar, habits, progression, both frontends, and accepted music capabilities remain consistent when used together.
 - [ ] Record reproducible findings, fix release-blocking failures, and retain regression coverage where useful.
 
 ## Scope and sequencing

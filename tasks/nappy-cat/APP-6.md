@@ -12,7 +12,7 @@
 
 ## Goal
 
-Give people a clear place to control the behavior of features they actually have. Grow this surface with the roadmap.
+Give people a clear place to control the behavior of features they actually have. Begin with command/configuration access, add TUI settings later, and reuse the same preferences in the GUI.
 
 ## Acceptance criteria
 
@@ -23,6 +23,8 @@ Give people a clear place to control the behavior of features they actually have
 
 ## Documentation and learning
 
+- [clap documentation](https://docs.rs/clap/latest/clap/)
+- [Ratatui documentation](https://ratatui.rs/)
 - [egui documentation](https://docs.rs/egui/latest/egui/)
 - [keyring documentation — one credential-storage option](https://docs.rs/keyring/latest/keyring/)
 

@@ -1,4 +1,4 @@
-# MUSIC-3: Resolve Spotify feasibility for the presentable app
+# MUSIC-3: Resolve Spotify feasibility before full TUI integration
 
 **Type:** Research / decision
 
@@ -8,11 +8,11 @@
 
 **Status:** Planned
 
-**Dependencies:** [APP-9](../nappy-cat/APP-9.md)
+**Dependencies:** [HABIT-2](../habits/HABIT-2.md)
 
 ## Goal
 
-Check the supported Spotify experience once the first companion features are presentable, before expanding the integration.
+Check the supported Spotify experience after calendar and basic habits, before packaging the full TUI. GUI, tracking, and companion features are not prerequisites.
 
 ## Acceptance criteria
 

@@ -2,7 +2,7 @@
 
 Use these references to investigate the questions in a task and make your own design decisions. They are reading material, not an implementation checklist. Start with the links attached to the task; this index provides more context when needed.
 
-Links and provider constraints were checked on **September 16, 2026**. Provider access rules can change. For crate documentation linked through `latest`, select the version in `Cargo.lock` before applying examples. A newer documentation version is not a reason to upgrade the project automatically. Libraries listed here are options to study, not required new dependencies.
+Existing provider references were checked on **September 16, 2026**. Terminal and calendar learning references were added during the dual-interface scope revision; this update does not revalidate provider access rules. Provider access rules can change. For crate documentation linked through `latest`, select the version in `Cargo.lock` before applying examples. A newer documentation version is not a reason to upgrade the project automatically. Libraries listed here are options to study, not required new dependencies.
 
 ## Rust and project boundaries
 
@@ -81,3 +81,18 @@ These are examples to examine when a task raises a relevant question. Reading th
 - [emilk/eframe_template](https://github.com/emilk/eframe_template): inspect a small egui application lifecycle and its build setup.
 - [emilk/egui](https://github.com/emilk/egui): explore demo widgets and trace how an interaction produces its visible behavior.
 - [tokio-rs/mini-redis](https://github.com/tokio-rs/mini-redis): study an explicitly educational async application, particularly how it separates concurrent responsibilities.
+
+## Commands, TUI, and later GUI
+
+- [clap](https://docs.rs/clap/latest/clap/): command parsing, help, and small usable entry points before a full interface.
+- [Ratatui](https://ratatui.rs/): terminal layout, input, widgets, lifecycle, and rendering. A candidate to investigate, not a mandated dependency.
+- [Focusd](https://github.com/BibekBhusal0/focusd): the owner's chosen reference for presets and terminal presentation. Start with `src/timer/state.rs`, `src/timer/engine.rs`, and `src/config/settings.rs`; then inspect `src/tui/pages/timer.rs` and `src/tui/app.rs`. `src/database/history.rs` and `src/stats/calculate.rs` are later tracking references. Its daemon is an architecture example, not a requirement to copy.
+- Revisit the egui/eframe references for APP-13, after the integrated TUI release. Compare how two frontends can reuse the same domain behavior and records.
+
+## Calendar and habits
+
+- [Chrono](https://docs.rs/chrono/latest/chrono/): dates, local time, offsets, and ambiguous time boundaries.
+- [iCalendar / RFC 5545](https://www.rfc-editor.org/info/rfc5545/): event, all-day, timezone, and recurrence concepts. The first local calendar does not require implementing the whole standard or calendar-provider sync.
+- Read CAL-1/CAL-2 before HABIT-1/HABIT-2. Focus on distinguishing a schedule, an occurrence, and its recorded outcome; daily analytics and streaks are deferred to PROGRESS-2.
+
+YouTube Music remains the first music provider and Spotify the second. Apple Music is outside scope. Calendar provider selection and synchronization are future decisions, not implied by local calendar support.

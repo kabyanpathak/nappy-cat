@@ -19,7 +19,7 @@ Keep user work and preferences durable without a cloud account. Begin with the t
 - [ ] Choose and justify a compact local storage approach and an appropriate per-user application-data location.
 - [ ] Saved settings and session records survive restart; interrupted or failed writes do not silently erase the last valid state.
 - [ ] Data-format changes and unreadable data have a documented migration/recovery path that preserves recoverable user data.
-- [ ] Tasks, provider links, queued changes, progress, and unlocks can be added in their own stages. Credentials are handled separately by CORE-6.
+- [ ] Tasks, calendar events, habit occurrences/completions, provider links, queued changes, progress, and unlocks can be added in their own stages. Credentials are handled separately by CORE-6.
 
 ## Documentation and learning
 

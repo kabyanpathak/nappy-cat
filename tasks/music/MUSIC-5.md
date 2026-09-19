@@ -8,17 +8,17 @@
 
 **Status:** Planned
 
-**Dependencies:** [MUSIC-4](../music/MUSIC-4.md), [APP-9](../nappy-cat/APP-9.md)
+**Dependencies:** [MUSIC-4](../music/MUSIC-4.md), [MUSIC-2](../music/MUSIC-2.md)
 
 ## Goal
 
-Finish provider selection and cross-feature behavior before returning to the remaining companion extras.
+Finish provider selection and cross-feature behavior before integrating and packaging the full TUI.
 
 ## Acceptance criteria
 
 - [ ] Users can select between implemented providers; unavailable or explicitly deferred providers are clearly labelled.
 - [ ] Switching, reconnecting, changing views, and quitting do not create conflicting playback sessions or stale account state.
-- [ ] Focus feedback, music, task sync, and companion presentation remain usable together, including during outages.
+- [ ] Focus feedback, music, task sync, calendar, and habit work remain usable together, including during outages.
 - [ ] Provider-specific limits and measured resource use are documented; unsupported integration work remains visibly blocked rather than counted as complete.
 
 ## Scope and sequencing

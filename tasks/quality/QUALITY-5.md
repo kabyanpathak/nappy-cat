@@ -2,7 +2,7 @@
 
 **Type:** Task
 
-**Stage:** 7. Remaining extras and release
+**Stage:** 9. GUI polish and release
 
 **Priority:** High
 
@@ -12,7 +12,7 @@
 
 ## Goal
 
-Deliver a native application someone can install and use on the supported platforms without needing the source checkout.
+Deliver the later GUI release alongside the supported TUI so someone can install and use either on the supported platforms without needing the source checkout.
 
 ## Acceptance criteria
 
@@ -22,6 +22,8 @@ Deliver a native application someone can install and use on the supported platfo
 - [ ] Dependency and asset licenses are recorded, release scope and provider distribution eligibility are checked, and release evidence includes recovery and footprint results.
 
 ## Scope and sequencing
+
+TUI-4 owns the earlier terminal release and does not depend on this GUI release ticket.
 
 A release must distinguish implemented capabilities from owner-approved deferrals; a provider blocker is not a completed feature.
 

@@ -2,13 +2,13 @@
 
 **Type:** Task
 
-**Stage:** 5. First extras
+**Stage:** 8. Tracking and GUI
 
 **Priority:** Normal
 
 **Status:** Planned
 
-**Dependencies:** [APP-3](../nappy-cat/APP-3.md)
+**Dependencies:** [APP-13](../nappy-cat/APP-13.md)
 
 ## Goal
 
@@ -23,7 +23,7 @@ Create the first small animated cat that reflects focus, breaks, idle time, and 
 
 ## Scope and sequencing
 
-Start after the YouTube Music stage outcome is accepted.
+Start after TUI-4, alongside the later GUI and tracking work.
 
 ## Documentation and learning
 
